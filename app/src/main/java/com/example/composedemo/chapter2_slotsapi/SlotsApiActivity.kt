@@ -1,4 +1,4 @@
-package com.example.composedemo.slotsapi
+package com.example.composedemo.chapter2_slotsapi
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

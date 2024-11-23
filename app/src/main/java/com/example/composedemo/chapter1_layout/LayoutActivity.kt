@@ -1,4 +1,4 @@
-package com.example.composedemo.layout
+package com.example.composedemo.chapter1_layout
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

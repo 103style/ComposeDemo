@@ -1,4 +1,4 @@
-package com.example.composedemo.layout
+package com.example.composedemo.chapter1_layout
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
