@@ -3,12 +3,13 @@ package com.example.composedemo.chapter3_list
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,7 +32,9 @@ class ListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeDemoTheme {
-                ScrollingList()
+                Box(Modifier.safeDrawingPadding()) {
+                    ScrollingList()
+                }
             }
         }
     }
@@ -79,9 +82,7 @@ fun ScrollingList() { // 有缓冲，相当于RecyclerView
     Column {
         Row {
             Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 20.dp),
+                modifier = Modifier.weight(1f),
                 onClick = {
                     coroutineScope.launch {
                         scrollState.animateScrollToItem(0)
@@ -91,9 +92,7 @@ fun ScrollingList() { // 有缓冲，相当于RecyclerView
                 Text("Scroll to top")
             }
             Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 20.dp),
+                modifier = Modifier.weight(1f),
                 onClick = {
                     coroutineScope.launch {
                         scrollState.animateScrollToItem(count - 1)
