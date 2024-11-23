@@ -22,7 +22,8 @@ class CustomLayoutActivity : ComponentActivity() {
         setContent {
             ComposeDemoTheme {
                 Box(Modifier.safeDrawingPadding()) {
-                    TextWithPaddingToBaseLine()
+//                    TextWithPaddingToBaseLine()
+                    MyColumnLayoutDemo()
                 }
             }
         }
