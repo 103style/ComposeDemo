@@ -13,10 +13,13 @@
         android:theme="@style/Theme.ComposeDemo"
         tools:targetApi="31">
         <activity
+            android:name=".layout.LayoutActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".layout.LayoutActivity"
+            android:name=".slotsapi.SlotsApiActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ComposeDemo">
