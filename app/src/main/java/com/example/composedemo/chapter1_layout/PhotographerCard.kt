@@ -53,6 +53,7 @@ fun PhotographerCard(modify: Modifier = Modifier) {
                 .align(Alignment.CenterVertically)
         ) {
             Text(text = "Ponny Ma", fontWeight = FontWeight.Bold)
+            // https://stackoverflow.com/questions/72574071/unable-to-change-text-emphasis-using-localcontentalpha-in-material-design-3
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
                 Text(
                     text = "the owner or Tencent company.",
