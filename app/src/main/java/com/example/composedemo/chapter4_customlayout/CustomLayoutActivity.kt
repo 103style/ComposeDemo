@@ -23,8 +23,10 @@ class CustomLayoutActivity : ComponentActivity() {
             ComposeDemoTheme {
                 Box(Modifier.safeDrawingPadding()) {
 //                    TextWithPaddingToBaseLine()
-//                    MyColumnLayoutDemo()
-                    StaggeredGridDemo()
+//                    MyColumnLayoutDemo() // 自己实现column布局
+//                    StaggeredGridDemo() // 自己实现 gridview
+//                    ConstraintLayoutDemo() // constraintLayout使用
+                    ConstraintLayoutDemo2() // constraintLayout使用
                 }
             }
         }
