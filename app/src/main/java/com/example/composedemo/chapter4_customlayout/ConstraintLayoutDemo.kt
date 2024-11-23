@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 
 /**
  * @author Created by kempluo 2024/11/23 22:55
@@ -71,5 +72,22 @@ fun ConstraintLayoutDemo2() {
         ) {
             Text("Button 2")
         }
+    }
+}
+
+@Composable
+fun ConstraintLayoutDemo3() {
+    ConstraintLayout {
+        val text = createRef()
+        // 1/3位置
+        val guideline = createGuidelineFromStart(fraction = 1f / 3)
+
+        Text("this is long sentences，hahahahahhahahahahahahahahhahahahahahahhahahahahahahahahhahahahahahahhahahahahahahahahhaha",
+            modifier = Modifier.constrainAs(text) {
+                linkTo(start = guideline, end = parent.end)
+                // 设置自动换行
+                width = Dimension.preferredWrapContent
+            })
+
     }
 }

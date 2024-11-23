@@ -26,7 +26,8 @@ class CustomLayoutActivity : ComponentActivity() {
 //                    MyColumnLayoutDemo() // 自己实现column布局
 //                    StaggeredGridDemo() // 自己实现 gridview
 //                    ConstraintLayoutDemo() // constraintLayout使用
-                    ConstraintLayoutDemo2() // constraintLayout使用
+//                    ConstraintLayoutDemo2() // constraintLayout使用
+                    ConstraintLayoutDemo3() // constraintLayout使用
                 }
             }
         }
