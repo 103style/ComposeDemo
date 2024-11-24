@@ -34,6 +34,10 @@ import kotlin.random.Random
 /**
  * @author Created by kempluo 2024/11/24 16:59
  *
+ * https://www.bilibili.com/video/BV1ob4y1a7ad
+ * 第 27 - 34 节
+ *
+ *
  * compose 和 viewModel 结合 构造消息列表的添加和删除
  * @see TodoScreenActivity todoVM.todoItems.observeAsState
  *
@@ -87,40 +91,44 @@ class StateDemoActivity : ComponentActivity() {
             },
         )
     }
-}
 
 
-@Composable
-private fun TodoScreen(
-    dataList: List<TodoItem> = defaultDataList,
-    onAddItem: (TodoItem) -> Unit,
-    onRemoveItem: (TodoItem) -> Unit,
-) {
-    Column {
-        // 多行
-        LazyColumn(
-            modifier = Modifier.weight(1f), contentPadding = PaddingValues(top = 8.dp)
-        ) {
-            items(dataList) {
-                TodoItemView(
-                    it,
-                    onItemClick = { onRemoveItem(it) },
-                    Modifier.fillParentMaxWidth(),
-                )
+    @Composable
+    private fun TodoScreen(
+        dataList: List<TodoItem> = defaultDataList,
+        onAddItem: (TodoItem) -> Unit,
+        onRemoveItem: (TodoItem) -> Unit,
+    ) {
+        Column {
+            TodoInputDemo { item ->
+                todoVM.addItem(item)
             }
-        }
+            // 多行
+            LazyColumn(
+                modifier = Modifier.weight(1f), contentPadding = PaddingValues(top = 8.dp)
+            ) {
+                items(dataList) {
+                    TodoItemView(
+                        it,
+                        onItemClick = { onRemoveItem(it) },
+                        Modifier.fillParentMaxWidth(),
+                    )
+                }
+            }
 
-        Button(
-            onClick = {
-                onAddItem(generateRandomTodoItem())
-            }, modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Text("add random todo")
+            Button(
+                onClick = {
+                    onAddItem(generateRandomTodoItem())
+                }, modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("add random todo")
+            }
         }
     }
 }
+
 
 @Composable
 private fun TodoItemView(
@@ -138,8 +146,7 @@ private fun TodoItemView(
         // item.id 不变的时候 iconAlpha不会变
         val iconAlpha = remember(item.id) { randomTint() }
         Icon(
-            item.icon.imageVector,
-            stringResource(item.icon.contentDescription),
+            item.icon.imageVector, stringResource(item.icon.contentDescription),
             // 直接使用 randomTint() 会导致每次列表更新的时候 alpha发生变化
             // tint = LocalContentColor.current.copy(alpha = randomTint())
             tint = LocalContentColor.current.copy(alpha = iconAlpha)
