@@ -25,10 +25,29 @@ data class TodoItem(
 enum class TodoIcon(
     val imageVector: ImageVector, @StringRes val contentDescription: Int
 ) {
-    Square(Icons.Default.CropSquare, R.string.icon_des_square),
-    Done(Icons.Default.Done, R.string.icon_des_done),
-    Event(Icons.Default.Event, R.string.icon_des_event),
-    Privacy(Icons.Default.PrivacyTip, R.string.icon_des_privacy),
+    Square(Icons.Default.CropSquare, R.string.icon_des_square), Done(
+        Icons.Default.Done, R.string.icon_des_done
+    ),
+    Event(Icons.Default.Event, R.string.icon_des_event), Privacy(
+        Icons.Default.PrivacyTip, R.string.icon_des_privacy
+    ),
     Trash(Icons.Default.RestoreFromTrash, R.string.icon_des_trash),
 
+}
+
+
+fun generateRandomTodoItem(): TodoItem {
+    val msg = listOf(
+        "Learn compose",
+        "Learn state",
+        "Build dynamic UIs",
+        "Learn Unidirectioal Data Flow",
+        "Integrate LiveData",
+        "Integrate ViewModle",
+        "Remember to savedState",
+        "Build stateless composables",
+        "Use state from stateless composables",
+    ).random()
+    val icon = TodoIcon.values().random()
+    return TodoItem(msg, icon)
 }
