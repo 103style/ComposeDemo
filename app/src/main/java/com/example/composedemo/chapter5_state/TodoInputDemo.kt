@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.TextButton
@@ -29,7 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
 /**
@@ -45,11 +49,19 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
+    // 当前输入的事项标题
     val (text, setText) = remember {
         mutableStateOf("")
     }
+    // 当前事项选中的图标
     val (icon, setIcon) = remember {
         mutableStateOf(TodoIcon.Square)
+    }
+    val onSubmit = {
+        // 提交， 然后重置状态
+        onItemComplete(TodoItem(text, icon))
+        setText("")
+        setIcon(TodoIcon.Square)
     }
     val isIconRowVisible = text.isNotBlank()
     Column {
@@ -64,15 +76,12 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
                 onTextChange = setText,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 8.dp)
+                    .padding(end = 8.dp),
+                onImeAction = onSubmit
             )
             // 按钮
             TodoAddButton(
-                onClick = {
-                    // 提交， 然后清空
-                    onItemComplete(TodoItem(text, icon))
-                    setText("")
-                },
+                onClick = onSubmit,
                 text = "Add",
                 modifier = Modifier.align(Alignment.CenterVertically),
                 enable = text.isNotBlank()
@@ -90,13 +99,26 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
 
 // 输入框
 @Composable
-fun TodoInput(text: String, onTextChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun TodoInput(
+    text: String,
+    onTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onImeAction: () -> Unit = {} // 软键盘点击完成
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     TextField(
         value = text,
         onValueChange = onTextChange,
         colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
         maxLines = 1,
-        modifier = modifier
+        modifier = modifier,
+        // 第37节 配置键盘 https://www.bilibili.com/video/BV1ob4y1a7ad
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            onImeAction()
+            keyboardController?.hide()
+        })
     )
 }
 
