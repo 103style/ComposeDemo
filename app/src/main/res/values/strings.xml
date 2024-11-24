@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ComposeDemo</string>
+    <string name="icon_des_square">Square</string>
+    <string name="icon_des_done">Done</string>
+    <string name="icon_des_event">Event</string>
+    <string name="icon_des_privacy">Privacy</string>
+    <string name="icon_des_trash">Trash</string>
 </resources>

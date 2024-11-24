@@ -15,6 +15,9 @@
         android:theme="@style/Theme.ComposeDemo"
         tools:targetApi="31">
         <activity
+            android:name=".chapter4_customlayout.CustomLayoutActivity"
+            android:exported="false" />
+        <activity
             android:name=".chapter3_list.ListActivity"
             android:exported="false" />
         <activity
@@ -27,7 +30,7 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".chapter4_customlayout.CustomLayoutActivity"
+            android:name=".chapter5_state.CustomLayoutActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ComposeDemo">
