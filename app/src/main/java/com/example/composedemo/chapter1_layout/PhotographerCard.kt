@@ -28,6 +28,10 @@ import com.example.composedemo.R
  * ⚠️⚠️⚠️
  * · Compose 的 Modifier 默认有先后顺序
  * ⚠️⚠️⚠️
+ *
+ * Row 用于水平排列子组件，而 Column 用于垂直排列子组件。
+ *  Row   相当于 LinearLayout 的 orientation 是 Horizontal
+ * Column 相当于 LinearLayout 的 orientation 是 Vertical
  */
 @Composable
 fun PhotographerCard(modify: Modifier = Modifier) {
