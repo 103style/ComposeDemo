@@ -1,15 +1,19 @@
 package com.example.composedemo.chapter5_state
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
@@ -20,17 +24,20 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -47,6 +54,7 @@ import androidx.compose.ui.unit.dp
  * - var value by remember{ mutableStateOf(default) }
  * - val (value, setValue) = remember{ mutableStateOf(default) }
  */
+
 @Composable
 fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
     // 当前输入的事项标题
@@ -64,6 +72,25 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
         setIcon(TodoIcon.Square)
     }
     val isIconRowVisible = text.isNotBlank()
+    TodoEntryInput(
+        text = text,
+        onTextChange = setText,
+        icon = icon,
+        onIconChange = setIcon,
+        submit = onSubmit,
+        isIconRowVisible = isIconRowVisible
+    )
+}
+
+@Composable
+fun TodoEntryInput(
+    text: String,
+    onTextChange: (String) -> Unit,
+    icon: TodoIcon,
+    onIconChange: (TodoIcon) -> Unit,
+    submit: () -> Unit,
+    isIconRowVisible: Boolean
+) {
     Column {
         Row(
             Modifier
@@ -73,15 +100,15 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
             // 输入框
             TodoInput(
                 text = text,
-                onTextChange = setText,
+                onTextChange = onTextChange,
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 8.dp),
-                onImeAction = onSubmit
+                onImeAction = submit
             )
             // 按钮
             TodoAddButton(
-                onClick = onSubmit,
+                onClick = submit,
                 text = "Add",
                 modifier = Modifier.align(Alignment.CenterVertically),
                 enable = text.isNotBlank()
@@ -89,11 +116,33 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
         }
 
         if (isIconRowVisible) {
-            InputIconRow(icon, onIconChange = setIcon, modifier = Modifier.padding(top = 8.dp))
+            InputIconRow(icon, onIconChange = onIconChange, modifier = Modifier.padding(top = 8.dp))
         } else {
             Spacer(modifier = Modifier.height(16.dp))
         }
 
+    }
+}
+
+//  第38节 输入框添加一个背景 https://www.bilibili.com/video/BV1ob4y1a7ad
+@Composable
+fun TodoInputBackground(
+    elevate: Boolean, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit
+) {
+    // 帧动画的形式展示 surface 底部的阴影
+    val elevationAnim by animateDpAsState(
+        if (elevate) {
+            1.dp
+        } else {
+            0.dp
+        }, TweenSpec(300)
+    )
+    Surface(
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f),
+        shape = RectangleShape,
+        elevation = elevationAnim
+    ) {
+        Row(modifier.animateContentSize(TweenSpec(300)), content = content)
     }
 }
 

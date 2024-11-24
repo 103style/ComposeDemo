@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.LocalContentColor
@@ -92,40 +91,39 @@ class StateDemoActivity : ComponentActivity() {
             },
         )
     }
+}
 
+@Composable
+private fun TodoScreen(
+    dataList: List<TodoItem> = defaultDataList,
+    onAddItem: (TodoItem) -> Unit,
+    onRemoveItem: (TodoItem) -> Unit,
+) {
+    Column {
+        TodoInputBackground(true) {
+            TodoInputDemo(onAddItem)
+        }
+        // 多行
+        LazyColumn(
+            modifier = Modifier.weight(1f), contentPadding = PaddingValues(top = 8.dp)
+        ) {
+            items(dataList) {
+                TodoItemView(
+                    it,
+                    onItemClick = { onRemoveItem(it) },
+                    Modifier.fillParentMaxWidth(),
+                )
+            }
+        }
 
-    @Composable
-    private fun TodoScreen(
-        dataList: List<TodoItem> = defaultDataList,
-        onAddItem: (TodoItem) -> Unit,
-        onRemoveItem: (TodoItem) -> Unit,
-    ) {
-        Column {
-            TodoInputDemo { item ->
-                todoVM.addItem(item)
-            }
-            // 多行
-            LazyColumn(
-                modifier = Modifier.weight(1f), contentPadding = PaddingValues(top = 8.dp)
-            ) {
-                items(dataList) {
-                    TodoItemView(
-                        it,
-                        onItemClick = { onRemoveItem(it) },
-                        Modifier.fillParentMaxWidth(),
-                    )
-                }
-            }
-
-            Button(
-                onClick = {
-                    onAddItem(generateRandomTodoItem())
-                }, modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                Text("add random todo")
-            }
+        Button(
+            onClick = {
+                onAddItem(generateRandomTodoItem())
+            }, modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text("add random todo")
         }
     }
 }
