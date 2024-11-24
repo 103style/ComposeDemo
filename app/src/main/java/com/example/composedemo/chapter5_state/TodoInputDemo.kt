@@ -1,13 +1,27 @@
 package com.example.composedemo.chapter5_state
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -15,13 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 /**
  * @author Created by kempluo 2024/11/24 20:41
  *
  * https://www.bilibili.com/video/BV1ob4y1a7ad
- * 第 33 节
+ * 第 33 & 36节
  *
  * 通过以下三种方式声明 MutableState是一个可组合对象
  * - val state = remember{ mutableStateOf(default) }
@@ -33,6 +48,10 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
     val (text, setText) = remember {
         mutableStateOf("")
     }
+    val (icon, setIcon) = remember {
+        mutableStateOf(TodoIcon.Square)
+    }
+    val isIconRowVisible = text.isNotBlank()
     Column {
         Row(
             Modifier
@@ -51,7 +70,7 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
             TodoAddButton(
                 onClick = {
                     // 提交， 然后清空
-                    onItemComplete(TodoItem(text, TodoIcon.entries.toTypedArray().random()))
+                    onItemComplete(TodoItem(text, icon))
                     setText("")
                 },
                 text = "Add",
@@ -59,6 +78,13 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
                 enable = text.isNotBlank()
             )
         }
+
+        if (isIconRowVisible) {
+            InputIconRow(icon, onIconChange = setIcon, modifier = Modifier.padding(top = 8.dp))
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
     }
 }
 
@@ -97,11 +123,68 @@ fun TodoAddButton(
     }
 }
 
+/**
+ * 一排图标，根本文本框是否有内容，自动收起和弹出，带动画效果
+ * https://www.bilibili.com/video/BV1ob4y1a7ad
+ * 第 33 & 36节
+ */
+@Composable
+fun InputIconRow(
+    icon: TodoIcon,
+    onIconChange: (TodoIcon) -> Unit,
+    visible: Boolean = true,
+    modifier: Modifier = Modifier
+) {
+    // 进出动画
+    val enterAnim =
+        remember { fadeIn(animationSpec = TweenSpec(300, easing = FastOutLinearInEasing)) }
+    val exitAnim =
+        remember { fadeOut(animationSpec = TweenSpec(300, easing = FastOutSlowInEasing)) }
+    Box(modifier.defaultMinSize(minHeight = 16.dp)) {
+        AnimatedVisibility(visible, enter = enterAnim, exit = exitAnim) {
+            IconRow(icon, onIconChange)
+        }
+    }
+}
 
+@Composable
+fun IconRow(icon: TodoIcon, onIconChange: (TodoIcon) -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier) {
+        for (todoIcon in TodoIcon.entries) {
+            SelectableIconButton(
+                todoIcon, onIconSelected = {
+                    onIconChange(todoIcon)
+                }, isSelected = todoIcon == icon
+            )
+        }
+    }
+}
 
-
-
-
-
-
-
+@Composable
+fun SelectableIconButton(
+    icon: TodoIcon, onIconSelected: () -> Unit, isSelected: Boolean, modifier: Modifier = Modifier
+) {
+    // 图标状态颜色
+    val tint = if (isSelected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    TextButton(onClick = onIconSelected, shape = CircleShape, modifier = modifier) {
+        Column {
+            Icon(
+                imageVector = icon.imageVector,
+                contentDescription = stringResource(icon.contentDescription)
+            )
+            if (isSelected) {
+                Box(
+                    modifier
+                        .padding(top = 3.dp)
+                        .width(icon.imageVector.defaultWidth) // 图标的大小
+                        .height(1.dp)
+                        .background(tint)
+                )
+            }
+        }
+    }
+}

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.LocalContentColor
@@ -149,7 +150,7 @@ private fun TodoItemView(
             item.icon.imageVector, stringResource(item.icon.contentDescription),
             // 直接使用 randomTint() 会导致每次列表更新的时候 alpha发生变化
             // tint = LocalContentColor.current.copy(alpha = randomTint())
-            tint = LocalContentColor.current.copy(alpha = iconAlpha)
+            tint = LocalContentColor.current.copy(alpha = iconAlpha),
         )
     }
 }
