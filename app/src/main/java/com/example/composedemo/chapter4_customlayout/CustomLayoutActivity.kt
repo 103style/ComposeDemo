@@ -27,7 +27,8 @@ class CustomLayoutActivity : ComponentActivity() {
 //                    StaggeredGridDemo() // 自己实现 gridview
 //                    ConstraintLayoutDemo() // constraintLayout使用
 //                    ConstraintLayoutDemo2() // constraintLayout使用
-                    ConstraintLayoutDemo3() // constraintLayout使用
+//                    ConstraintLayoutDemo3() // constraintLayout使用
+                    DecoupleConstraintLayoutDemo() // 固定的配置抽离出来， 变化到通过通过传参配置
                 }
             }
         }

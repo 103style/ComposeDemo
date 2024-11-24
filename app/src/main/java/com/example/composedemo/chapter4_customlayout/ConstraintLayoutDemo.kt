@@ -1,11 +1,15 @@
 package com.example.composedemo.chapter4_customlayout
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 
 /**
@@ -89,5 +93,47 @@ fun ConstraintLayoutDemo3() {
                 width = Dimension.preferredWrapContent
             })
 
+    }
+}
+
+
+private const val BUTTON_ID = "button"
+private const val TEXT_ID = "text"
+
+@Composable
+fun DecoupleConstraintLayoutDemo() {
+    BoxWithConstraints {
+        val constraintSet = if (maxWidth < maxHeight) {
+            decoupleConstraint(16.dp)
+        } else {
+            decoupleConstraint(64.dp)
+        }
+        ConstraintLayout(constraintSet) {
+            Button(
+                onClick = {},
+                // 使用 Modifier.constrainAs 来提供约束，引用作为它的第一个参数
+                modifier = Modifier.layoutId(BUTTON_ID),
+            ) {
+                Text("Button 1")
+            }
+
+            Text("text", modifier = Modifier.layoutId(TEXT_ID))
+        }
+    }
+}
+
+/**
+ * 将固定的结构抽离出来
+ */
+private fun decoupleConstraint(margin: Dp): ConstraintSet {
+    return ConstraintSet {
+        val button = createRefFor(id = BUTTON_ID)
+        val text = createRefFor(id = TEXT_ID)
+        constrain(ref = button) {
+            top.linkTo(parent.top, margin)
+        }
+        constrain(ref = text) {
+            top.linkTo(button.bottom, margin)
+        }
     }
 }
