@@ -186,6 +186,7 @@ private fun TodoItemView(
             // 直接使用 randomTint() 会导致每次列表更新的时候 alpha发生变化
             // tint = LocalContentColor.current.copy(alpha = randomTint())
             tint = LocalContentColor.current.copy(alpha = iconAlpha),
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
 }
