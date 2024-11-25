@@ -80,12 +80,14 @@ class StateDemoActivity : ComponentActivity() {
     private fun TodoScreenActivity() {
         TodoScreen(
             todoVM.todoItems,
+            todoVM.curInputText,
             onAddItem = todoVM::addItem,
             onRemoveItem = todoVM::removeItem,
             currentlyEditing = todoVM.curEditTodoItem,
             onStartEdit = todoVM::onEditItemSelected,
             onEditItemChange = todoVM::onEditItemChange,
-            onEditDone = todoVM::onEditDone
+            onEditDone = todoVM::onEditDone,
+            onInputChange = todoVM::onInputChange,
         )
     }
 }
@@ -93,12 +95,14 @@ class StateDemoActivity : ComponentActivity() {
 @Composable
 private fun TodoScreen(
     dataList: List<TodoItem> = defaultDataList,
+    inputText: String,
     onAddItem: (TodoItem) -> Unit,
     onRemoveItem: (TodoItem) -> Unit,
     currentlyEditing: TodoItem? = null,
     onStartEdit: (TodoItem) -> Unit = {},
     onEditItemChange: (TodoItem) -> Unit = {},
     onEditDone: () -> Unit = {},
+    onInputChange: (String) -> Unit = {},
 ) {
     Column {
         // 顶部的输入框是否显示编辑状态
@@ -108,7 +112,7 @@ private fun TodoScreen(
             if (enableTopSection) {
                 TodoEditHint(Modifier.align(Alignment.CenterVertically))
             } else {
-                TodoInputDemo(onAddItem)
+                TodoInputDemo(onAddItem, onInputChange, inputText)
             }
         }
         // 多行

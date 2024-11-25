@@ -60,10 +60,14 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
+fun TodoInputDemo(
+    onItemComplete: (TodoItem) -> Unit,
+    onInputChange: (String) -> Unit,
+    inputText: String
+) {
     // 当前输入的事项标题
     val (text, setText) = remember {
-        mutableStateOf("")
+        mutableStateOf(inputText)
     }
     // 当前事项选中的图标
     val (icon, setIcon) = remember {
@@ -73,12 +77,16 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
         // 提交， 然后重置状态
         onItemComplete(TodoItem(text, icon))
         setText("")
+        onInputChange("")
         setIcon(TodoIcon.Square)
     }
     val isIconRowVisible = text.isNotBlank()
     TodoEntryInput(
         text = text,
-        onTextChange = setText,
+        onTextChange = {
+            setText(it)
+            onInputChange(it)
+        },
         icon = icon,
         onIconChange = setIcon,
         submit = onSubmit,
