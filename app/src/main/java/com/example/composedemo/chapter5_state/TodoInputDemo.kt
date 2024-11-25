@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,6 +28,10 @@ import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -79,7 +83,12 @@ fun TodoInputDemo(onItemComplete: (TodoItem) -> Unit) {
         onIconChange = setIcon,
         submit = onSubmit,
         isIconRowVisible = isIconRowVisible
-    )
+    ) {
+        // 按钮
+        TodoAddButton(
+            onClick = onSubmit, text = "Add", enable = text.isNotBlank()
+        )
+    }
 }
 
 @Composable
@@ -89,7 +98,8 @@ fun TodoEntryInput(
     icon: TodoIcon,
     onIconChange: (TodoIcon) -> Unit,
     submit: () -> Unit,
-    isIconRowVisible: Boolean
+    isIconRowVisible: Boolean,
+    buttonSlot: @Composable () -> Unit
 ) {
     Column {
         Row(
@@ -106,13 +116,8 @@ fun TodoEntryInput(
                     .padding(end = 8.dp),
                 onImeAction = submit
             )
-            // 按钮
-            TodoAddButton(
-                onClick = submit,
-                text = "Add",
-                modifier = Modifier.align(Alignment.CenterVertically),
-                enable = text.isNotBlank()
-            )
+            Spacer(Modifier.width(8.dp))
+            Box(Modifier.align(Alignment.CenterVertically)) { buttonSlot() }
         }
 
         if (isIconRowVisible) {
@@ -123,6 +128,58 @@ fun TodoEntryInput(
 
     }
 }
+
+/**
+ * 第39节 编辑模式 https://www.bilibili.com/video/BV1ob4y1a7ad
+ * @param item 选中的TodoItem条目
+ * @param onEditItemChange 编辑条目的回调
+ * @param onEditDone 编辑完成的回调
+ * @param onRemoveItem 删除条目的回调
+ */
+@Composable
+fun TodoItemInlineEditor(
+    item: TodoItem,
+    onEditItemChange: (TodoItem) -> Unit,
+    onEditDone: () -> Unit,
+    onRemoveItem: (TodoItem) -> Unit
+) {
+    TodoEntryInput(
+        text = item.task,
+        onTextChange = { onEditItemChange(item.copy(task = it)) },
+        icon = item.icon,
+        onIconChange = {
+            onEditItemChange(item.copy(icon = it))
+        },
+        submit = onEditDone,
+        isIconRowVisible = true
+    ) {
+        // 保存 和 删除 图表
+        Row {
+            val shrinkButtons = Modifier.widthIn(20.dp)
+            IconButton(onClick = onEditDone, modifier = shrinkButtons) {
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = "",
+                    Modifier.align(Alignment.CenterVertically)
+                )
+            }
+
+            Spacer(Modifier.width(8.dp))
+
+            IconButton(onClick = {
+                onRemoveItem(item)
+            }, modifier = shrinkButtons) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "",
+                    Modifier.align(Alignment.CenterVertically)
+                )
+            }
+        }
+    }
+
+}
+
 
 //  第38节 输入框添加一个背景 https://www.bilibili.com/video/BV1ob4y1a7ad
 @Composable

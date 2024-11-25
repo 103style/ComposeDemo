@@ -22,11 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 import kotlin.random.Random
@@ -56,7 +56,7 @@ import kotlin.random.Random
  */
 class StateDemoActivity : ComponentActivity() {
 
-    private val todoVM by viewModels<TodoViewModule>()
+    private val todoVM by viewModels<TodoViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,10 +64,9 @@ class StateDemoActivity : ComponentActivity() {
             ComposeDemoTheme {
                 Scaffold(topBar = {
                     TopAppBar(
-                        title = { Text("ComposeDemos") },
+                        title = { Text("ComposeStateDemo") },
                         backgroundColor = MaterialTheme.colorScheme.primary,
-
-                        )
+                    )
                 }, content = { padding ->
                     Box(Modifier.padding(padding)) {
                         TodoScreenActivity()
@@ -79,16 +78,14 @@ class StateDemoActivity : ComponentActivity() {
 
     @Composable
     private fun TodoScreenActivity() {
-        // liveData 转化为 state对象
-        val items: List<TodoItem> by todoVM.todoItems.observeAsState(listOf())
         TodoScreen(
-            items,
-            onAddItem = {
-                todoVM.addItem(it)
-            },
-            onRemoveItem = {
-                todoVM.removeItem(it)
-            },
+            todoVM.todoItems,
+            onAddItem = todoVM::addItem,
+            onRemoveItem = todoVM::removeItem,
+            currentlyEditing = todoVM.curEditTodoItem,
+            onStartEdit = todoVM::onEditItemSelected,
+            onEditItemChange = todoVM::onEditItemChange,
+            onEditDone = todoVM::onEditDone
         )
     }
 }
@@ -98,21 +95,41 @@ private fun TodoScreen(
     dataList: List<TodoItem> = defaultDataList,
     onAddItem: (TodoItem) -> Unit,
     onRemoveItem: (TodoItem) -> Unit,
+    currentlyEditing: TodoItem? = null,
+    onStartEdit: (TodoItem) -> Unit = {},
+    onEditItemChange: (TodoItem) -> Unit = {},
+    onEditDone: () -> Unit = {},
 ) {
     Column {
+        // 顶部的输入框是否显示编辑状态
+        val enableTopSection = currentlyEditing != null
+
         TodoInputBackground(true) {
-            TodoInputDemo(onAddItem)
+            if (enableTopSection) {
+                TodoEditHint(Modifier.align(Alignment.CenterVertically))
+            } else {
+                TodoInputDemo(onAddItem)
+            }
         }
         // 多行
         LazyColumn(
             modifier = Modifier.weight(1f), contentPadding = PaddingValues(top = 8.dp)
         ) {
-            items(dataList) {
-                TodoItemView(
-                    it,
-                    onItemClick = { onRemoveItem(it) },
-                    Modifier.fillParentMaxWidth(),
-                )
+            items(dataList) { todo ->
+                if (todo.id == currentlyEditing?.id) {
+                    TodoItemInlineEditor(
+                        todo,
+                        onEditItemChange = onEditItemChange,
+                        onEditDone = onEditDone,
+                        onRemoveItem = onRemoveItem
+                    )
+                } else {
+                    TodoItemView(
+                        todo,
+                        onItemClick = { onStartEdit(todo) },
+                        Modifier.fillParentMaxWidth(),
+                    )
+                }
             }
         }
 
@@ -128,6 +145,21 @@ private fun TodoScreen(
     }
 }
 
+/**
+ * 顶部的编辑态提示
+ */
+@Composable
+fun TodoEditHint(modifier: Modifier = Modifier) {
+    Text(
+        "Editing  Item",
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
+}
+
 
 @Composable
 private fun TodoItemView(
@@ -141,7 +173,12 @@ private fun TodoItemView(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(item.task, Modifier.padding(4.dp))
+        Text(
+            item.task,
+            Modifier
+                .padding(end = 8.dp)
+                .weight(1f)
+        )
         // item.id 不变的时候 iconAlpha不会变
         val iconAlpha = remember(item.id) { randomTint() }
         Icon(

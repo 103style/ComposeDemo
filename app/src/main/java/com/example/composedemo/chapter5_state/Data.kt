@@ -54,6 +54,7 @@ fun generateRandomTodoItem(): TodoItem {
         "Remember to savedState",
         "Build stateless composables",
         "Use state from stateless composables",
+        "Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha Ha",
     ).random()
     val icon = TodoIcon.values().random()
     return TodoItem(msg, icon)
