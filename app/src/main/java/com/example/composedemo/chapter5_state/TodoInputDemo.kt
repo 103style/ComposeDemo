@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,23 +62,21 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TodoInputDemo(
-    onItemComplete: (TodoItem) -> Unit,
-    onInputChange: (String) -> Unit,
-    inputText: String
+    onItemComplete: (TodoItem) -> Unit
 ) {
     // 当前输入的事项标题
-    val (text, setText) = remember {
-        mutableStateOf(inputText)
+    // rememberSaveable 能保证横竖屏切换等状态 修改的值不会变为初始值
+    val (text, setText) = rememberSaveable {
+        mutableStateOf("")
     }
     // 当前事项选中的图标
-    val (icon, setIcon) = remember {
+    val (icon, setIcon) = rememberSaveable {
         mutableStateOf(TodoIcon.Square)
     }
     val onSubmit = {
         // 提交， 然后重置状态
         onItemComplete(TodoItem(text, icon))
         setText("")
-        onInputChange("")
         setIcon(TodoIcon.Square)
     }
     val isIconRowVisible = text.isNotBlank()
@@ -85,7 +84,6 @@ fun TodoInputDemo(
         text = text,
         onTextChange = {
             setText(it)
-            onInputChange(it)
         },
         icon = icon,
         onIconChange = setIcon,

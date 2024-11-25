@@ -13,10 +13,6 @@ class TodoViewModel : ViewModel() {
     var todoItems = mutableStateListOf<TodoItem>()
         private set
 
-    // 当前正在输入的文案
-    var curInputText by mutableStateOf("")
-        private set
-
     // 编辑的索引位置
     private var currentEditIndex by mutableStateOf(-1)
 
@@ -46,10 +42,6 @@ class TodoViewModel : ViewModel() {
 
     fun onEditItemChange(item: TodoItem) {
         todoItems[currentEditIndex] = item
-    }
-
-    fun onInputChange(text: String) {
-        curInputText = text
     }
 
 }
