@@ -5,26 +5,33 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.WbSunny
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -52,13 +60,13 @@ class AnimDemoActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeDemoTheme {
-                Content()
+                Box(Modifier.safeDrawingPadding()) {
+                    Content()
+                }
             }
         }
     }
-
 }
-
 
 @Composable
 fun Content() {
@@ -73,6 +81,10 @@ fun Content() {
     val (weatherLoading, setWeatherLoading) = rememberSaveable {
         mutableStateOf(false)
     }
+
+    val (weather, setWeather) = rememberSaveable {
+        mutableStateOf(Weather.Sunny)
+    }
     val (expandedTopic, setExpandTopic) = rememberSaveable {
         mutableStateOf<DataItem?>(null)
     }
@@ -80,13 +92,14 @@ fun Content() {
         mutableStateOf(false)
     }
 
+    val topics = testTopics
     val tasks = remember { mutableStateListOf(testTasks) }
-    val topics = remember { mutableStateListOf(testTopics) }
 
     suspend fun loadWeather() {
         if (!weatherLoading) {
             setWeatherLoading(true)
-            delay(3000L)
+            delay(1000L)
+            setWeather(Weather.entries.toTypedArray().random())
             setWeatherLoading(false)
         }
     }
@@ -117,6 +130,7 @@ fun Content() {
                 }
             })
         },
+
         content = { padding ->
             Box(Modifier.padding(padding)) {
                 LazyColumn(
@@ -130,7 +144,7 @@ fun Content() {
                             if (weatherLoading) {
                                 LoadingRow()
                             } else {
-                                WeatherRow(onRefresh = {
+                                WeatherRow(weather, onRefresh = {
                                     coroutineScope.launch {
                                         loadWeather()
                                     }
@@ -138,39 +152,45 @@ fun Content() {
                             }
                         }
                     }
-                    item { Spacer(Modifier.height(32.dp)) }
-
+                    item { Spacer(Modifier.height(16.dp)) }
                     item { Header(title = stringResource(R.string.topics)) }
+                    item { Spacer(Modifier.height(16.dp)) }
 
                     items(topics) { topic ->
-                        TopicRow {
-                            item = topic,
-                            expanded = expandedTopic == topic,
-                            onClick = {
-                                expandedTopic = !expandedTopic
+                        TopicRow(item = topic, expanded = expandedTopic == topic, onClick = {
+                            if (expandedTopic != topic) {
                                 setExpandTopic(topic)
+                            } else {
+                                setExpandTopic(null)
                             }
-                        }
+                        })
                     }
 
-                    item { Spacer(Modifier.height(32.dp)) }
-
-
+                    item { Spacer(Modifier.height(16.dp)) }
                     item { Header(title = stringResource(R.string.task)) }
+                    item { Spacer(Modifier.height(16.dp)) }
 
                     if (tasks.isEmpty()) {
                         item {
-                            TextButton(onClick = {
-                                tasks.clear()
-                            }) {
-                                Text(text = stringResource(R.string.add_task))
+                            Row(modifier = Modifier
+                                .clickable {
+                                    tasks.clear()
+                                }
+                                .fillMaxWidth()
+                                .background(Color.White)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Text(text = stringResource(R.string.add_task), color = Color.Black)
                             }
                         }
                     } else {
-                        items(tasks) { task ->
-                            TaskRow(task, onRemove = {
-                                tasks.remove(task)
-                            })
+                        items(count = tasks.size) { index ->
+                            // TODO: task类型为啥是list???
+                            val task = tasks.getOrNull(index)
+                            if (task != null) {
+                                TaskRow(task, onRemove = {
+                                    tasks.remove(task)
+                                })
+                            }
                         }
                     }
                 }
@@ -184,31 +204,66 @@ fun Content() {
 
 @Composable
 fun HomeTabBar(bgColor: Color, tabPage: TabPage, onTabSelected: (TabPage) -> Unit) {
-    TabRow(selectedTabIndex = tabPage.ordinal,
-        modifier = Modifier.background(bgColor),
-        indicator = { tabPosition ->
-            HomeTabIndicator(tabPosition, tabPosition)
-        }) {
-        HomeTopTab(TabPage.Home, onTabClick = onTabSelected)
+    TabRow(
+        selectedTabIndex = tabPage.ordinal, modifier = Modifier.background(bgColor),
+        indicator = { tabs ->
+            HomeTabIndicator(tabs, tabPage.ordinal)
+        },
+    ) {
+        HomeTopTab(
+            TabPage.Home,
+            onTabClick = onTabSelected,
+            modifier = Modifier.background(color = tabPage.bgColor)
+        )
 
-        HomeTopTab(TabPage.Work, onTabClick = onTabSelected)
+        HomeTopTab(
+            TabPage.Work,
+            onTabClick = onTabSelected,
+            modifier = Modifier.background(color = tabPage.bgColor)
+        )
     }
+}
+
+@Composable
+fun HomeTabIndicator(tabs: List<TabPosition>, index: Int) {
+    Box(
+        Modifier
+            .tabIndicatorOffset(tabs[index])
+            .fillMaxHeight()
+            .background(color = Color.Gray.copy(alpha = 0.3f))
+    )
 }
 
 
 @Composable
 fun HomeTopTab(tab: TabPage, modifier: Modifier = Modifier, onTabClick: (TabPage) -> Unit) {
-    Button(modifier = modifier.height(tab.tabHeight), onClick = {
-        onTabClick(tab)
-    }) {
-
+    Row(
+        modifier = modifier
+            .height(64.dp)
+            .clickable {
+                onTabClick(tab)
+            },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = tab.icon, contentDescription = null
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(tab.text, style = MaterialTheme.typography.titleMedium, color = Color.White)
     }
 }
 
 @Composable
 fun Header(title: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(text = title, textAlign = TextAlign.Center, modifier = Modifier.padding(16.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = title,
+            color = Color.Black,
+            style = MaterialTheme.typography.titleLarge,
+        )
     }
 }
 
@@ -219,12 +274,68 @@ fun LoadingRow() {
 }
 
 @Composable
-fun WeatherRow(onRefresh: () -> Unit) {
-    Row {
-        Icon(imageVector = Icons.Default.WbSunny, contentDescription = "")
+fun WeatherRow(weather: Weather, onRefresh: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Icon(
+            imageVector = weather.icon, contentDescription = ""
+        )
+
+        Spacer(Modifier.width(8.dp))
+
+        Text(weather.temperature, modifier = Modifier.weight(1f))
+
+        IconButton(modifier = Modifier.wrapContentWidth(Alignment.End), onClick = onRefresh) {
+            Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
+        }
     }
 }
 
+
+@Composable
+fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(imageVector = item.icon, contentDescription = null)
+
+        Spacer(Modifier.width(8.dp))
+
+        Text(
+            item.title, maxLines = if (expanded) {
+                Int.MAX_VALUE
+            } else {
+                1
+            }, textAlign = TextAlign.Left, color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun TaskRow(items: List<DataItem>?, onRemove: () -> Unit) {
+    val item = items?.getOrNull(0) ?: return
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onRemove() },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(imageVector = item.icon, contentDescription = null)
+
+        Spacer(Modifier.width(8.dp))
+
+        Text(item.title, textAlign = TextAlign.Left, color = Color.Black)
+    }
+}
 
 @Composable
 fun HomeFloatingActionButton(extend: Boolean, onClick: () -> Unit) {
@@ -237,7 +348,7 @@ fun EditMessage(shown: Boolean) {
     AnimatedVisibility(visible = shown) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colors.secondary,
+            color = MaterialTheme.colorScheme.secondary,
             shadowElevation = 4.dp
         ) {
             Text(
