@@ -5,4 +5,11 @@
     <string name="icon_des_event">Event</string>
     <string name="icon_des_privacy">Privacy</string>
     <string name="icon_des_trash">Trash</string>
+
+
+    <string name="weather">Weather</string>
+    <string name="topics">Topics</string>
+    <string name="task">Task</string>
+    <string name="add_task">Add Task</string>
+    <string name="edit_message">Edit Message</string>
 </resources>
