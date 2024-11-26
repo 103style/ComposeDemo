@@ -71,6 +71,7 @@ class StateDemoActivity : ComponentActivity() {
                     Box(Modifier.padding(padding)) {
                         TodoScreenActivity()
 //                        StateSaveDemo()
+//                        CompositionLocalDemo()
                     }
                 })
             }
