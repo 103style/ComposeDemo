@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -14,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -328,24 +330,34 @@ fun WeatherRow(weather: Weather, onRefresh: () -> Unit) {
 
 @Composable
 fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
+    // TODO: 3 文本展开的动画  通过设置 animateContentSize 来实现内容的弹开的动画
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .animateContentSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Icon(imageVector = item.icon, contentDescription = null)
 
         Spacer(Modifier.width(8.dp))
 
-        Text(
-            item.title, maxLines = if (expanded) {
-                Int.MAX_VALUE
-            } else {
-                1
-            }, textAlign = TextAlign.Left, color = Color.Black
-        )
+        Column {
+            Text(
+                item.title, maxLines = if (expanded) {
+                    Int.MAX_VALUE
+                } else {
+                    1
+                }, textAlign = TextAlign.Left, color = Color.Black
+            )
+
+            if (expanded && item.detailInfo.isNotBlank()) {
+                Text(
+                    item.detailInfo, textAlign = TextAlign.Left, color = Color.Black
+                )
+            }
+        }
     }
 }
 
