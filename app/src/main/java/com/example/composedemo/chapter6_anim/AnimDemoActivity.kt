@@ -9,8 +9,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
@@ -29,15 +34,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -62,6 +70,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -136,7 +145,7 @@ fun Content() {
     suspend fun loadWeather() {
         if (!weatherLoading) {
             setWeatherLoading(true)
-            delay(1000L)
+            delay(3000L)
             setWeather(Weather.entries.toTypedArray().random())
             setWeatherLoading(false)
         }
@@ -218,13 +227,18 @@ fun Content() {
                     if (tasks.isEmpty()) {
                         item {
                             Row(modifier = Modifier
+                                .heightIn(min = 64.dp)
                                 .clickable {
                                     tasks.clear()
                                 }
                                 .fillMaxWidth()
                                 .background(Color.White)
                                 .padding(horizontal = 16.dp, vertical = 8.dp)) {
-                                Text(text = stringResource(R.string.add_task), color = Color.Black)
+                                Text(
+                                    text = stringResource(R.string.add_task),
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
                             }
                         }
                     } else {
@@ -352,20 +366,52 @@ fun Header(title: String) {
     }
 }
 
-
 @Composable
 fun LoadingRow() {
+    // TODO: 5.重复动画 Animate value between 0f and 1f, then bach to 0f repeatedly.
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = 1000
+                1f at 500 // 500ms 的时候 alpha 是 1f, 也即是 0-500ms的时候执行动画 500-1000的时候维持1f的alpha
+            },
+            repeatMode = RepeatMode.Reverse,
+        ), label = ""
+    )
+    Row(
+        modifier = Modifier
+            .heightIn(min = 64.dp)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color.LightGray.copy(alpha = alpha))
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+                .background(Color.LightGray.copy(alpha = alpha))
+        )
 
+    }
 }
 
 @Composable
 fun WeatherRow(weather: Weather, onRefresh: () -> Unit) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier
+            .heightIn(min = 64.dp)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = weather.icon, contentDescription = ""
+            imageVector = weather.icon, contentDescription = "", modifier = Modifier.size(48.dp)
         )
 
         Spacer(Modifier.width(8.dp))
@@ -382,30 +428,37 @@ fun WeatherRow(weather: Weather, onRefresh: () -> Unit) {
 @Composable
 fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
     // TODO: 3 文本展开的动画  通过设置 animateContentSize 来实现内容的弹开的动画
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .clickable { onClick() }
-            .animateContentSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-    ) {
+    Row(modifier = Modifier
+        .heightIn(min = 64.dp)
+        .fillMaxWidth()
+        .background(Color.White)
+        .clickable { onClick() }
+        .animateContentSize()
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically) {
         Icon(imageVector = item.icon, contentDescription = null)
 
         Spacer(Modifier.width(8.dp))
 
         Column {
             Text(
-                item.title, maxLines = if (expanded) {
+                item.title,
+                maxLines = if (expanded) {
                     Int.MAX_VALUE
                 } else {
                     1
-                }, textAlign = TextAlign.Left, color = Color.Black
+                },
+                textAlign = TextAlign.Left,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodyLarge,
             )
 
             if (expanded && item.detailInfo.isNotBlank()) {
                 Text(
-                    item.detailInfo, textAlign = TextAlign.Left, color = Color.Black
+                    item.detailInfo,
+                    textAlign = TextAlign.Left,
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -416,16 +469,25 @@ fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
 fun TaskRow(item: DataItem, onRemove: () -> Unit) {
     Row(
         modifier = Modifier
+            .heightIn(min = 64.dp)
             .fillMaxWidth()
             .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onRemove() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = item.icon, contentDescription = null)
+        Icon(
+            imageVector = item.icon, contentDescription = null
+        )
 
         Spacer(Modifier.width(8.dp))
 
-        Text(item.title, textAlign = TextAlign.Left, color = Color.Black)
+        Text(
+            item.title,
+            textAlign = TextAlign.Left,
+            color = Color.Black,
+            style = MaterialTheme.typography.bodyLarge,
+        )
     }
 }
 
