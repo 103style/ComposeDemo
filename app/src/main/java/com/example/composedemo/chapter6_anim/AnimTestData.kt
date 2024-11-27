@@ -12,12 +12,14 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.composedemo.ui.theme.Pink80
+import com.example.composedemo.ui.theme.Purple80
 
 enum class TabPage(
     val text: String, val icon: ImageVector, val bgColor: Color
 ) {
-    Home("Home", Icons.Default.Home, Color.Red), Work(
-        "Work", Icons.Default.Work, Color.Green
+    Home("Home", Icons.Default.Home, Pink80), Work(
+        "Work", Icons.Default.Work, Purple80
     ),
 }
 

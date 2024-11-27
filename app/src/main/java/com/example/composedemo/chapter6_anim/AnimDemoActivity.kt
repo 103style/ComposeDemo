@@ -4,14 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,16 +26,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -41,7 +51,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +68,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.composedemo.R
 import com.example.composedemo.ui.theme.ComposeDemoTheme
+import com.example.composedemo.ui.theme.Pink40
+import com.example.composedemo.ui.theme.Purple40
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -241,7 +252,7 @@ fun HomeTabBar(bgColor: Color, tabPage: TabPage, onTabSelected: (TabPage) -> Uni
     TabRow(
         selectedTabIndex = tabPage.ordinal, modifier = Modifier.background(bgColor),
         indicator = { tabs ->
-            HomeTabIndicator(tabs, tabPage.ordinal)
+            HomeTabIndicator(tabs, tabPage)
         },
     ) {
         HomeTopTab(
@@ -259,12 +270,52 @@ fun HomeTabBar(bgColor: Color, tabPage: TabPage, onTabSelected: (TabPage) -> Uni
 }
 
 @Composable
-fun HomeTabIndicator(tabs: List<TabPosition>, index: Int) {
+fun HomeTabIndicator(tabPositions: List<TabPosition>, tabPage: TabPage) {
+    // TODO: 4. tab选中框的切换动画
+    // 自定义选项卡指示器
+    // 多值动画：在状态发生改变时，有多个点动画值要一起发生改变
+    // 设置一个Transition 并使用 targetState提供的目标对其进行更新。
+    // 当targetState更改时，Transition将朝着为新 targetState 指定的目标值运行其所有子动画
+    // 可以使用 Transition 动态添加子动画: Transition.animateFloat、animateColor、animateValue 等
+    val transition = updateTransition(tabPage, label = "Tab indicator")
+    val index = tabPage.ordinal
+//    val indicatorLeft = tabPositions[index].left   // 当前选中tab的左侧x坐标
+    val indicatorLeft by transition.animateDp(label = "Tab indicator Left", transitionSpec = {
+        // 左边切换到右边， 左边缘移动要比右边慢
+        if (TabPage.Home isTransitioningTo TabPage.Work) {
+            spring(stiffness = Spring.StiffnessVeryLow)
+        } else {
+            spring(stiffness = Spring.StiffnessMedium)
+        }
+    }) {
+        tabPositions[it.ordinal].left
+    }
+//    val indicatorRight = tabPositions[index].right // 当前选中tab的右侧x坐标
+    val indicatorRight by transition.animateDp(label = "Tab indicator Right", transitionSpec = {
+        // 右边切换到左边， 右边缘移动要比左边慢
+        if (TabPage.Home isTransitioningTo TabPage.Work) {
+            spring(stiffness = Spring.StiffnessMedium)
+        } else {
+            spring(stiffness = Spring.StiffnessVeryLow)
+        }
+    }) {
+        tabPositions[it.ordinal].right
+    }
+
+    val color by transition.animateColor(label = "Tab indicator Color") {
+        if (it == TabPage.Home) Purple40 else Pink40
+    }
+
     Box(
         Modifier
-            .tabIndicatorOffset(tabs[index])
-            .fillMaxHeight()
-            .background(color = Color.Gray.copy(alpha = 0.3f))
+            .wrapContentSize(align = Alignment.BottomStart)
+            .offset(x = indicatorLeft) // 偏移值 就是选中tab的左侧 x
+            .width(indicatorRight - indicatorLeft) // 宽度 为右侧x - 左侧x
+            .padding(2.dp)
+            .fillMaxSize()
+            .border(
+                BorderStroke(2.dp, color), RoundedCornerShape(4.dp)
+            )
     )
 }
 
