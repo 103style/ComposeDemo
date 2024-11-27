@@ -417,7 +417,7 @@ fun WeatherRow(weather: Weather, onRefresh: () -> Unit) {
     Row(
         modifier = Modifier
             .heightIn(min = 64.dp)
-            .padding(horizontal = 16.dp),
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
