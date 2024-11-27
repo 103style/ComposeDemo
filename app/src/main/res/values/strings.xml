@@ -12,6 +12,7 @@
     <string name="task">Task</string>
     <string name="add_task">Add Task</string>
     <string name="edit_message">Edit Message</string>
+    <string name="edit">Edit</string>
 
     <array name="task_array">
 

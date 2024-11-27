@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 enum class TabPage(
     val text: String, val icon: ImageVector, val bgColor: Color, val tabHeight: Dp = 64.dp
 ) {
-    Home("Home", Icons.Default.Home, Color.Red), Work("Work", Icons.Default.Work, Color.Cyan)
+    Home("Home", Icons.Default.Home, Color.Cyan.copy(alpha = 0.5f)), Work(
+        "Work", Icons.Default.Work, Color.Green.copy(alpha = 0.5f)
+    ),
 }
 
 enum class Weather(val icon: ImageVector, val temperature: String) {

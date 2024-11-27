@@ -24,7 +24,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -82,6 +84,10 @@ fun Content() {
         mutableStateOf(false)
     }
 
+    val (extend, setExtend) = rememberSaveable {
+        mutableStateOf(false)
+    }
+
     val (weather, setWeather) = rememberSaveable {
         mutableStateOf(Weather.Sunny)
     }
@@ -93,7 +99,15 @@ fun Content() {
     }
 
     val topics = testTopics
-    val tasks = remember { mutableStateListOf(testTasks) }
+
+    val tasks = remember {
+        mutableStateListOf(
+            DataItem(Icons.Default.Task, "Learn Compose Anim"),
+            DataItem(Icons.Default.Task, "Learn Compose Gesture"),
+            DataItem(Icons.Default.Task, "Learn Compose Navigation"),
+            DataItem(Icons.Default.Task, "Learn Compose Integrated")
+        )
+    }
 
     suspend fun loadWeather() {
         if (!weatherLoading) {
@@ -107,8 +121,10 @@ fun Content() {
     suspend fun showEditMessage() {
         if (!editMessageShown) {
             setEditShow(true)
+            setExtend(true)
             delay(3000L)
             setEditShow(false)
+            setExtend(false)
         }
     }
 
@@ -124,7 +140,7 @@ fun Content() {
         },
         containerColor = tab.bgColor, contentColor = tab.bgColor,
         floatingActionButton = {
-            HomeFloatingActionButton(extend = false, onClick = {
+            HomeFloatingActionButton(extend = extend, onClick = {
                 coroutineScope.launch {
                     showEditMessage()
                 }
@@ -194,9 +210,9 @@ fun Content() {
                         }
                     }
                 }
-            }
 
-            EditMessage(editMessageShown)
+                EditMessage(editMessageShown)
+            }
         },
     )
 }
@@ -319,8 +335,7 @@ fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun TaskRow(items: List<DataItem>?, onRemove: () -> Unit) {
-    val item = items?.getOrNull(0) ?: return
+fun TaskRow(item: DataItem, onRemove: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -339,7 +354,25 @@ fun TaskRow(items: List<DataItem>?, onRemove: () -> Unit) {
 
 @Composable
 fun HomeFloatingActionButton(extend: Boolean, onClick: () -> Unit) {
-    FloatingActionButton(onClick = onClick) { }
+    FloatingActionButton(onClick = onClick) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = null,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            if (extend) {
+                Text(
+                    text = stringResource(R.string.edit),
+                    modifier = Modifier.padding(end = 16.dp),
+                    color = Color.White
+                )
+            }
+        }
+
+    }
 }
 
 
