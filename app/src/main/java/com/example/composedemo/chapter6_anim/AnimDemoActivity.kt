@@ -4,6 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +43,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -105,6 +112,10 @@ fun Content() {
             DataItem(Icons.Default.Task, "Learn Compose Anim"),
             DataItem(Icons.Default.Task, "Learn Compose Gesture"),
             DataItem(Icons.Default.Task, "Learn Compose Navigation"),
+            DataItem(Icons.Default.Task, "Learn Compose Integrated"),
+            DataItem(Icons.Default.Task, "Learn Compose Anim"),
+            DataItem(Icons.Default.Task, "Learn Compose Gesture"),
+            DataItem(Icons.Default.Task, "Learn Compose Navigation"),
             DataItem(Icons.Default.Task, "Learn Compose Integrated")
         )
     }
@@ -128,17 +139,22 @@ fun Content() {
         }
     }
 
+    // todo LaunchedEffect?
     LaunchedEffect(Unit) {
         loadWeather()
     }
 
+
+    // todo 1: 点击tab 背景颜色切换动画， 使用 animateColorAsState 来设置背景
+    val bgColor by animateColorAsState(tab.bgColor, label = "")
+
     Scaffold(
         topBar = {
-            HomeTabBar(bgColor = tab.bgColor, tabPage = tab, onTabSelected = {
+            HomeTabBar(bgColor = bgColor, tabPage = tab, onTabSelected = {
                 setTab(it)
             })
         },
-        containerColor = tab.bgColor, contentColor = tab.bgColor,
+        containerColor = bgColor, contentColor = bgColor,
         floatingActionButton = {
             HomeFloatingActionButton(extend = extend, onClick = {
                 coroutineScope.launch {
@@ -318,7 +334,6 @@ fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
             .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(imageVector = item.icon, contentDescription = null)
 
@@ -342,7 +357,6 @@ fun TaskRow(item: DataItem, onRemove: () -> Unit) {
             .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onRemove() },
-        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(imageVector = item.icon, contentDescription = null)
 
@@ -356,17 +370,18 @@ fun TaskRow(item: DataItem, onRemove: () -> Unit) {
 fun HomeFloatingActionButton(extend: Boolean, onClick: () -> Unit) {
     FloatingActionButton(onClick = onClick) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
                 contentDescription = null,
-                modifier = Modifier.padding(horizontal = 16.dp)
             )
-            if (extend) {
+            // TODO: 2-1.通过 AnimatedVisibility 来为文本的显示隐藏添加动画
+            AnimatedVisibility(extend) {
                 Text(
                     text = stringResource(R.string.edit),
-                    modifier = Modifier.padding(end = 16.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     color = Color.White
                 )
             }
@@ -378,7 +393,20 @@ fun HomeFloatingActionButton(extend: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun EditMessage(shown: Boolean) {
-    AnimatedVisibility(visible = shown) {
+    // TODO: 2-2  自定义显示/隐藏的动画， 向下平移进来， 然后在向上平移出去
+    AnimatedVisibility(
+        visible = shown, enter = slideInVertically(
+            // 通过从偏移量 -fullHeight 像下滑动到0 来进入
+            initialOffsetY = { fullHeight -> -fullHeight }, animationSpec = tween(
+                durationMillis = 150, easing = LinearOutSlowInEasing
+            )
+        ),
+        // 通过从偏移量 0 像上滑动到 -fullHeight 来退出
+        exit = slideOutVertically(
+            targetOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+        )
+    ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.secondary,
