@@ -7,12 +7,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -21,10 +23,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.horizontalDrag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +57,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -63,6 +67,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,17 +75,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.composedemo.R
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 import com.example.composedemo.ui.theme.Pink40
 import com.example.composedemo.ui.theme.Purple40
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 /**
  * @author Created by kempluo 2024/11/26 15:18
@@ -130,16 +144,7 @@ fun Content() {
     val topics = testTopics
 
     val tasks = remember {
-        mutableStateListOf(
-            DataItem(Icons.Default.Task, "Learn Compose Anim"),
-            DataItem(Icons.Default.Task, "Learn Compose Gesture"),
-            DataItem(Icons.Default.Task, "Learn Compose Navigation"),
-            DataItem(Icons.Default.Task, "Learn Compose Integrated"),
-            DataItem(Icons.Default.Task, "Learn Compose Anim"),
-            DataItem(Icons.Default.Task, "Learn Compose Gesture"),
-            DataItem(Icons.Default.Task, "Learn Compose Navigation"),
-            DataItem(Icons.Default.Task, "Learn Compose Integrated")
-        )
+        mutableStateListOf<DataItem>().apply { addAll(testTasks) }
     }
 
     suspend fun loadWeather() {
@@ -230,10 +235,12 @@ fun Content() {
                                 .heightIn(min = 64.dp)
                                 .clickable {
                                     tasks.clear()
+                                    tasks.addAll(testTasks)
                                 }
                                 .fillMaxWidth()
                                 .background(Color.White)
-                                .padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = stringResource(R.string.add_task),
                                     color = Color.Black,
@@ -243,12 +250,15 @@ fun Content() {
                         }
                     } else {
                         items(count = tasks.size) { index ->
-                            // TODO: task类型为啥是list???
                             val task = tasks.getOrNull(index)
                             if (task != null) {
-                                TaskRow(task, onRemove = {
-                                    tasks.remove(task)
-                                })
+                                // ⚠️⚠️⚠️ key(task) 这个很重要，用来标记唯一标识，⚠️⚠️⚠️
+                                // 不加这个 侧滑删除会导致虽然删除了， 但是用到这个位置的后续item不会恢复对应的状态，
+                                key(task) {
+                                    TaskRow(task, onRemove = {
+                                        tasks.remove(task)
+                                    })
+                                }
                             }
                         }
                     }
@@ -467,27 +477,31 @@ fun TopicRow(item: DataItem, expanded: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun TaskRow(item: DataItem, onRemove: () -> Unit) {
-    Row(
+    Surface(
         modifier = Modifier
-            .heightIn(min = 64.dp)
             .fillMaxWidth()
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onRemove() },
-        verticalAlignment = Alignment.CenterVertically
+            .swipeToDismiss(onRemove),
+        shadowElevation = 2.dp,
     ) {
-        Icon(
-            imageVector = item.icon, contentDescription = null
-        )
+        Row(
+            modifier = Modifier
+                .heightIn(min = 64.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = item.icon, contentDescription = null
+            )
 
-        Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(8.dp))
 
-        Text(
-            item.title,
-            textAlign = TextAlign.Left,
-            color = Color.Black,
-            style = MaterialTheme.typography.bodyLarge,
-        )
+            Text(
+                item.title,
+                textAlign = TextAlign.Left,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
     }
 }
 
@@ -541,5 +555,75 @@ fun EditMessage(shown: Boolean) {
                 text = stringResource(R.string.edit_message), modifier = Modifier.padding(16.dp)
             )
         }
+    }
+}
+
+// TODO: 6-1 手势动画 来实现侧滑删除
+private fun Modifier.swipeToDismiss(onDismissed: () -> Unit): Modifier = composed {
+    // 水平滑动动画
+    val offsetX = remember { Animatable(0f) }
+
+    pointerInput(Unit) { // 这里可以处理触摸事件 相 当 View的 xxxTouchEvent
+        // 滑动手指抬起之后衰减动画， 用于计算动画最后的固定位置
+        val decay = splineBasedDecay<Float>(this)
+
+        coroutineScope {
+            // 创建一个修饰符，用于处理修改元素区域内的光标输入
+            // pointerInput可以调用PionterInputScope.awaitPointerEventScope
+            // 以安装可以等待PointEventScope的光标输入处理程序
+            while (true) {
+                // 等待触摸按下事件
+                // awaitPointerEventScope: 挂起并安装指针输入块，该块可以等待输入时间并立即响应他们
+                // awaitFirstDown： 读取事件，直到收到第一个down
+                val pointerId = awaitPointerEventScope {
+                    awaitFirstDown().id // ACTION_DOWN
+                }
+                val velocityTracker = VelocityTracker()
+                // 等待拖动事件
+                awaitPointerEventScope {
+                    // 监听水平滑动
+                    horizontalDrag(pointerId) { change ->
+                        val horDragOffset = offsetX.value + change.positionChange().x
+                        // 启动协程，执行动画
+                        launch {
+                            offsetX.snapTo(horDragOffset)
+                        }
+                        // 记录滑动的位置
+                        velocityTracker.addPosition(change.uptimeMillis, change.position)
+
+                        // 消费掉手势事件，而不是传递给外部
+                        if (change.positionChange() != Offset.Zero) {
+                            change.consume()
+                        }
+                    }
+                }
+                // 拖动完成，计算继续衰减滑动的速度
+                val velocity = velocityTracker.calculateVelocity().x
+                // 计算手抬起之后 还能滑动的距离
+                val targetOffset = decay.calculateTargetValue(offsetX.value, velocity)
+
+                offsetX.updateBounds(
+                    lowerBound = -size.width.toFloat(), upperBound = size.width.toFloat()
+                )
+
+                launch {
+                    if (targetOffset.absoluteValue <= size.width) {
+                        // 没滑出去 就滑回来
+                        offsetX.animateTo(targetValue = 0f, initialVelocity = velocity)
+                    } else {
+                        // 启动衰减动画
+                        offsetX.animateDecay(velocity, decay)
+                        onDismissed()
+                        // ⚠️⚠️⚠️
+                        // 如果配置taskRow 不加 key(task)， 调用下面这个函数虽然看起来没问题
+                        // 但是 删除了一半的时候就会发现侧滑删除不了了
+                        // offsetX.snapTo(0f)
+                        // ⚠️⚠️⚠️
+                    }
+                }
+            }
+        }
+    }.offset {
+        IntOffset(offsetX.value.roundToInt(), 0)
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.Dry
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.Color
@@ -36,18 +37,8 @@ val testTopics = listOf(
     ),
     DataItem(
         Icons.Default.Book,
-        "111111111111",
+        "22222222",
         "adajhfskl啊深刻的哈萨克发哈口角是非卡沙发客健身房卡上发生看见复活卡健身房卡及时反馈"
-    ),
-    DataItem(
-        Icons.Default.Book,
-        "111111111111",
-        "啊是极其恶劣分局开会胃口好起来然后开启五花肉块钱把我加入吧俺可大可久请回复开启和我客气好看"
-    ),
-    DataItem(
-        Icons.Default.Book,
-        "111111111111",
-        "啊是大客户反馈千家万户期间还为u却很委屈我呢群空间微博能看清就为看剧情稳步前进额不进去我崩溃就去吧"
     ),
     DataItem(
         Icons.Default.Crop,
@@ -65,8 +56,11 @@ val testTopics = listOf(
         "哈哈哈哈哈哈哈哈哈哈哈啊哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈啊哈哈哈哈哈哈哈哈哈哈"
     ),
 )
-val testTasks = mutableListOf<DataItem>().apply {
-    addAll(testTopics)
-}
+val testTasks = listOf(
+    DataItem(Icons.Default.Task, "Learn Compose Anim"),
+    DataItem(Icons.Default.Task, "Learn Compose Gesture"),
+    DataItem(Icons.Default.Task, "Learn Compose Navigation"),
+    DataItem(Icons.Default.Task, "Learn Compose Integrated")
+)
 
 data class DataItem(val icon: ImageVector, val title: String, val detailInfo: String = "")
