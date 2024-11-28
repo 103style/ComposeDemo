@@ -63,7 +63,11 @@ fun GestureDemo() {
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        ClickableDemo()
+//        ClickableDemo()
+//        ScrollBoxes()
+//        ScrollBoxesSmooth()
+//        ScrollableDemo()
+        NestedScrollDemo()
     }
 }
 
@@ -88,4 +92,103 @@ fun ClickableDemo() {
             .background(Color.LightGray)
             .padding(horizontal = 50.dp, vertical = 40.dp),
     )
+}
+
+
+/**
+ * 滚动修饰符
+ * 配置 .verticalScroll(rememberScrollState()) 可以实现滑动
+ */
+@Composable
+fun ScrollBoxes() {
+    Column(
+        modifier = Modifier
+            .background(Color.LightGray)
+            .size(100.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        repeat(10) {
+            Text("Item:%$it", modifier = Modifier.padding(2.dp))
+        }
+    }
+}
+
+
+/**
+ * 自己调用 ScrollState 的 滚动函数
+ */
+@Composable
+fun ScrollBoxesSmooth() {
+    val state = rememberScrollState()
+    // 附带效应？
+    LaunchedEffect(Unit) {
+        state.animateScrollTo(500) //  滑动到 y=500的位置
+    }
+    Column(
+        modifier = Modifier
+            .background(Color.LightGray)
+            .size(100.dp)
+            .verticalScroll(state)
+    ) {
+        repeat(10) {
+            Text("Item:%$it", modifier = Modifier.padding(2.dp))
+        }
+    }
+}
+
+/**
+ * 可滚动修饰符
+ * scrollable 修饰符与滚动修饰符不同。区别在于scrollable 可检测滚动手势， 但不会偏移起内容
+ */
+@Composable
+fun ScrollableDemo() {
+    var offset by remember { mutableFloatStateOf(0f) }
+    Box(
+        Modifier
+            .size(150.dp)
+            .scrollable(orientation = Orientation.Vertical,
+                state = rememberScrollableState { delta -> // 滚动的偏移量
+                    offset += delta
+                    delta
+                })
+            .background(Color.LightGray), contentAlignment = Alignment.Center
+    ) {
+        Text(text = offset.toString())
+    }
+}
+
+/**
+ * 嵌套滚动
+ *
+ * 内部 box 滑动完成之后 再继续 column的滑动
+ */
+@Composable
+fun NestedScrollDemo() {
+    val gradient = Brush.verticalGradient(0f to Color.Gray, 1000f to Color.White)
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.LightGray)
+            .verticalScroll(rememberScrollState())
+            .padding(32.dp), contentAlignment = Alignment.Center
+    ) {
+        Column {
+            repeat(6) {
+                Box(
+                    modifier = Modifier
+                        .height(128.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = "Item:$it",
+                        modifier = Modifier
+                            .border(12.dp, Color.DarkGray)
+                            .background(brush = gradient)
+                            .padding(24.dp)
+                            .height(150.dp) //
+                    )
+                }
+            }
+        }
+    }
 }
