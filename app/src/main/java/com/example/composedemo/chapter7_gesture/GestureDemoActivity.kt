@@ -6,7 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -35,8 +39,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.composedemo.ui.theme.ComposeDemoTheme
+import kotlin.math.roundToInt
 
 /**
  * @author Created by kempluo 2024/11/28 14:17
@@ -64,10 +70,14 @@ fun GestureDemo() {
         modifier = Modifier.fillMaxSize()
     ) {
 //        ClickableDemo()
+
 //        ScrollBoxes()
 //        ScrollBoxesSmooth()
 //        ScrollableDemo()
-        NestedScrollDemo()
+//        NestedScrollDemo()
+
+//        DraggableDemo()
+        DraggableWhereYouWant()
     }
 }
 
@@ -190,5 +200,41 @@ fun NestedScrollDemo() {
                 }
             }
         }
+    }
+}
+
+/**
+ * 拖动
+ * .draggable(orientation = Orientation.Horizontal) 只能单方向
+ */
+@Composable
+fun DraggableDemo() {
+    var offsetX by remember { mutableFloatStateOf(0f) }
+    Text(text = "Drag me",
+        modifier = Modifier
+            .offset { IntOffset(offsetX.roundToInt(), 0) }
+            .draggable(orientation = Orientation.Horizontal,
+                state = rememberDraggableState { offsetX += it })
+
+    )
+}
+
+@Composable
+fun DraggableWhereYouWant() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        var offsetX by remember { mutableFloatStateOf(0f) }
+        var offsetY by remember { mutableFloatStateOf(0f) }
+
+        Box(
+            Modifier
+                .offset { IntOffset(x = offsetX.roundToInt(), y = offsetY.roundToInt()) }
+                .background(Color.Blue)
+                .size(50.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    }
+                })
     }
 }
