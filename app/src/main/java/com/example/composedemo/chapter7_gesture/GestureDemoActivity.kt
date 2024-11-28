@@ -22,9 +22,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -77,7 +83,9 @@ fun GestureDemo() {
 //        NestedScrollDemo()
 
 //        DraggableDemo()
-        DraggableWhereYouWant()
+//        DraggableWhereYouWant()
+
+        SwipeableDemo()
     }
 }
 
@@ -219,6 +227,9 @@ fun DraggableDemo() {
     )
 }
 
+/**
+ * 随意拖动
+ */
 @Composable
 fun DraggableWhereYouWant() {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -236,5 +247,40 @@ fun DraggableWhereYouWant() {
                         offsetY += dragAmount.y
                     }
                 })
+    }
+}
+
+
+/**
+ * 惯性滑动
+ */
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun SwipeableDemo() {
+    val width = 200.dp
+    val squareSize = 100.dp
+
+    val swipeableState = rememberSwipeableState(0)
+
+    val sizePx = with(LocalDensity.current) {
+        squareSize.toPx()
+    }
+    val anchors = mapOf(0f to 0, sizePx to 1)
+    Box(
+        Modifier
+            .width(width)
+            .swipeable(
+                state = swipeableState,
+                anchors = anchors,
+                thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                orientation = Orientation.Horizontal
+            )
+            .background(Color.LightGray)
+    ) {
+        Box(
+            Modifier
+                .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+                .size(squareSize)
+                .background(Color.DarkGray))
     }
 }
