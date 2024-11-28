@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.runtime)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.compose.theme.adapter)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

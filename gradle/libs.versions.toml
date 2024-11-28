@@ -17,6 +17,8 @@ materialIconsExtended = "1.7.5"
 materialVersion = "1.7.5"
 runtimeLivedata = "1.7.5"
 runtime = "1.8.0-alpha06"
+constraintlayout = "2.2.0"
+composeThemeAdapter = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +45,8 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name =
 androidx-material = { group = "androidx.compose.material", name = "material", version.ref = "materialVersion" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+compose-theme-adapter = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeThemeAdapter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
