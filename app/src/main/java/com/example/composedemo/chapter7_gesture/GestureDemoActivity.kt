@@ -317,5 +317,12 @@ fun TransformableDemo() {
             }
             .transformable(state)
             .background(Color.Blue)
-            .size(100.dp, 200.dp))
+            .size(200.dp, 100.dp),
+        contentAlignment = Alignment.Center) {
+        Text(
+            text = "平移、缩放、旋转 操作",
+            color = Color.White,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
 }
