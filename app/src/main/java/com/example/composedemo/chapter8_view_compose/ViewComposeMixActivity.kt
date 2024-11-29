@@ -1,4 +1,4 @@
-package com.example.composedemo.chapter8_xml
+package com.example.composedemo.chapter8_view_compose
 
 import android.os.Bundle
 import android.view.ViewGroup

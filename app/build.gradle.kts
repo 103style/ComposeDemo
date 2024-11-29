@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.compose.theme.adapter)
+    implementation(libs.androidx.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
