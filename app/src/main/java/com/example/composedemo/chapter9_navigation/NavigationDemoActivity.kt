@@ -22,10 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 
 /**
@@ -55,7 +57,6 @@ fun RallyApp() {
 
 //    var currentScreen by rememberSaveable { mutableStateOf(RallyScreen.Overview) }
     val currentScreen = RallyScreen.formRouter(backStackEntry.value?.destination?.route)
-
 
     Scaffold(topBar = {
         RallyTabRow(
@@ -123,7 +124,10 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
         modifier = modifier
     ) {
         composable(route = RallyScreen.Overview.name) {
-            OverviewBody()
+            OverviewBody(onclick = {
+//                navController.navigate(RallyScreen.Bills.name)
+                navigateUseArgument(navController, "testArgument")
+            })
         }
 
         composable(route = RallyScreen.Accounts.name) {
@@ -133,5 +137,23 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
         composable(route = RallyScreen.Bills.name) {
             BillsBody()
         }
+
+        // 带参数的跳转
+        composable(
+            route = "${RallyScreen.Accounts.name}/{name}", arguments = listOf(
+                //定义string类型的参数 name
+                navArgument("name") {
+                    type = NavType.StringType
+                },
+            )
+        ) { entry ->
+            val accountName = entry.arguments?.getString("name")
+            AccountsBody(accountName)
+        }
     }
+}
+
+private fun navigateUseArgument(navController: NavHostController, argument: String) {
+    println("---------${RallyScreen.Accounts.name}/$argument")
+    navController.navigate("${RallyScreen.Accounts.name}/$argument")
 }
