@@ -18,16 +18,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 
@@ -52,15 +49,19 @@ class NavigationDemoActivity : ComponentActivity() {
 fun RallyApp() {
     val allScreens = RallyScreen.values().toList()
 
-    var currentScreen by rememberSaveable { mutableStateOf(RallyScreen.Overview) }
 
     val navController = rememberNavController()
+    val backStackEntry = navController.currentBackStackEntryAsState()
+
+//    var currentScreen by rememberSaveable { mutableStateOf(RallyScreen.Overview) }
+    val currentScreen = RallyScreen.formRouter(backStackEntry.value?.destination?.route)
+
 
     Scaffold(topBar = {
         RallyTabRow(
             allScreens = allScreens, onTabSelected = { screen ->
-                currentScreen = screen
-//                navController.navigate(screen.name)
+//                currentScreen = screen
+                navController.navigate(screen.name)
             }, current = currentScreen
         )
     }) { innerPadding ->
@@ -122,15 +123,15 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
         modifier = modifier
     ) {
         composable(route = RallyScreen.Overview.name) {
-            Text("Overview")
+            OverviewBody()
         }
 
         composable(route = RallyScreen.Accounts.name) {
-            Text("Accounts")
+            AccountsBody()
         }
 
         composable(route = RallyScreen.Bills.name) {
-            Text("Bills")
+            BillsBody()
         }
     }
 }

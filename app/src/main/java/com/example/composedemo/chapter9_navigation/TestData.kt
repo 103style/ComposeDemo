@@ -24,6 +24,17 @@ enum class RallyScreen(val icon: ImageVector, val body: @Composable ((String) ->
     fun content(onScreenChange: (String) -> Unit) {
         body(onScreenChange)
     }
+
+    companion object {
+        fun formRouter(route: String?): RallyScreen {
+            return when (route?.substringBefore("/")) {
+                Accounts.name -> Accounts
+                Bills.name -> Bills
+                Overview.name, null -> Overview
+                else -> throw IllegalArgumentException("not support router:$route")
+            }
+        }
+    }
 }
 
 
