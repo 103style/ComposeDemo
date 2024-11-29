@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 
 /**
@@ -140,12 +141,17 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
 
         // 带参数的跳转
         composable(
-            route = "${RallyScreen.Accounts.name}/{name}", arguments = listOf(
+            route = "${RallyScreen.Accounts.name}/{name}",
+            arguments = listOf(
                 //定义string类型的参数 name
                 navArgument("name") {
                     type = NavType.StringType
                 },
-            )
+            ),
+            // 直接跳转的链接设置， 可以通过 adb shell am start -d  "rally://accounts/Checking"  -a android.intent.action.View 跳转
+            deepLinks = listOf(navDeepLink {
+                uriPattern = "rally://${RallyScreen.Accounts.name}/{name})"
+            }),
         ) { entry ->
             val accountName = entry.arguments?.getString("name")
             AccountsBody(accountName)
