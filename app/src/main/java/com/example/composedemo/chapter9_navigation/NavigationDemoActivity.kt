@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.example.composedemo.chapter9_navigation.RallyScreen.Accounts
+import com.example.composedemo.chapter9_navigation.RallyScreen.Bills
+import com.example.composedemo.chapter9_navigation.RallyScreen.Overview
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 
 /**
@@ -38,10 +42,15 @@ class NavigationDemoActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 深度跳转链接
+        val deeplink = intent.data?.toString()
+        println("-----$deeplink")
+
         setContent {
             ComposeDemoTheme {
                 Box(Modifier.safeDrawingPadding()) {
-                    RallyApp()
+                    RallyApp(deeplink)
                 }
             }
         }
@@ -49,20 +58,19 @@ class NavigationDemoActivity : ComponentActivity() {
 }
 
 @Composable
-fun RallyApp() {
-    val allScreens = RallyScreen.values().toList()
+fun RallyApp(deeplink: String?) {
 
+    val allScreens = RallyScreen.values().toList()
 
     val navController = rememberNavController()
     val backStackEntry = navController.currentBackStackEntryAsState()
 
-//    var currentScreen by rememberSaveable { mutableStateOf(RallyScreen.Overview) }
+//    var currentScreen by rememberSaveable { mutableStateOf(Overview) }
     val currentScreen = RallyScreen.formRouter(backStackEntry.value?.destination?.route)
 
     Scaffold(topBar = {
         RallyTabRow(
             allScreens = allScreens, onTabSelected = { screen ->
-//                currentScreen = screen
                 navController.navigate(screen.name)
             }, current = currentScreen
         )
@@ -78,6 +86,12 @@ fun RallyApp() {
         RallyNavHost(navController = navController, Modifier.padding(innerPadding))
     }
 
+    // 处理深度跳转
+    deeplink?.let {
+        LaunchedEffect(Unit) {
+            navController.navigate(it.replace("rally://", ""))
+        }
+    }
 }
 
 @Composable
@@ -95,7 +109,6 @@ fun RallyTabRow(
                 onTabSelected(it)
             }, current == it)
         }
-
     }
 }
 
@@ -120,37 +133,36 @@ fun RallyTab(info: RallyScreen, onClick: () -> Unit, isSelected: Boolean) {
 @Composable
 fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
     NavHost(
-        navController = navController,
-        startDestination = RallyScreen.Overview.name,
-        modifier = modifier
+        navController = navController, startDestination = Overview.name, modifier = modifier
     ) {
-        composable(route = RallyScreen.Overview.name) {
+        composable(route = Overview.name) {
             OverviewBody(onclick = {
 //                navController.navigate(RallyScreen.Bills.name)
-                navigateUseArgument(navController, "testArgument")
+                navigateUseArgument(navController, it)
             })
         }
 
-        composable(route = RallyScreen.Accounts.name) {
+        composable(route = Accounts.name) {
             AccountsBody()
         }
 
-        composable(route = RallyScreen.Bills.name) {
+        composable(route = Bills.name) {
             BillsBody()
         }
 
         // 带参数的跳转
         composable(
-            route = "${RallyScreen.Accounts.name}/{name}",
+            route = "${Accounts.name}/{name}",
             arguments = listOf(
                 //定义string类型的参数 name
                 navArgument("name") {
                     type = NavType.StringType
                 },
             ),
-            // 直接跳转的链接设置， 可以通过 adb shell am start -d  "rally://accounts/Checking"  -a android.intent.action.View 跳转
+            // 直接跳转的链接设置， 可以通过 adb shell am start -d  "rally://accounts/Checking"  -a android.intent.action.VIEW 跳转
+            // 需要设置处理 deeplink的跳转， 参考 @see line 90
             deepLinks = listOf(navDeepLink {
-                uriPattern = "rally://${RallyScreen.Accounts.name}/{name})"
+                uriPattern = "rally://${Accounts.name}/{name})"
             }),
         ) { entry ->
             val accountName = entry.arguments?.getString("name")
@@ -160,6 +172,5 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
 }
 
 private fun navigateUseArgument(navController: NavHostController, argument: String) {
-    println("---------${RallyScreen.Accounts.name}/$argument")
-    navController.navigate("${RallyScreen.Accounts.name}/$argument")
+    navController.navigate("${Accounts.name}/$argument")
 }

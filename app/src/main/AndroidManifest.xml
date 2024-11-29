@@ -62,8 +62,7 @@
                 <!--  配置深层链接 rally://accounts/{name}  -->
                 <data
                     android:scheme="rally"
-                    android:host="accounts"
-                    android:pathPrefix="/{name}" />
+                    android:host="accounts" />
             </intent-filter>
         </activity>
     </application>
