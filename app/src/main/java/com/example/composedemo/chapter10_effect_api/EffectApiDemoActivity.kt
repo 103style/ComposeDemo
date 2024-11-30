@@ -25,7 +25,8 @@ class EffectApiDemoActivity : ComponentActivity() {
 //                    DisposableEffectDemo(onBackPressedDispatcher)
 //                    SideEffectDemo()
 //                    ProduceStateDemo()
-                    DerivedStateOfDemo()
+//                    DerivedStateOfDemo()
+                    SnapshotFlowDemo()
                 }
             }
         }
