@@ -1,4 +1,4 @@
-package com.example.composedemo.chapter10_effect_api.launcheffect
+package com.example.composedemo.chapter10_effect_api
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +33,7 @@ fun LaunchEffectDemo() {
 }
 
 @Composable
-fun ScaffoldDemo(
+private fun ScaffoldDemo(
     state: MutableState<Int>, scaffoldState: ScaffoldState = rememberScaffoldState()
 ) {
     if (state.value != 0) {
@@ -47,7 +47,7 @@ fun ScaffoldDemo(
     }
     println("ScaffoldDemo run, value:${state.value}")
     Scaffold(scaffoldState = scaffoldState, topBar = {
-        TopAppBar(title = { Text("title", color = Color.White) })
+        TopAppBar(title = { Text("LaunchEffectDemo", color = Color.White) })
     }, content = {
         Box(
             Modifier

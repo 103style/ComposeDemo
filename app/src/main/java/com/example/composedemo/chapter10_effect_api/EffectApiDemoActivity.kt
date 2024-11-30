@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.ui.Modifier
-import com.example.composedemo.chapter10_effect_api.launcheffect.LaunchEffectDemo
 import com.example.composedemo.ui.theme.ComposeDemoTheme
 
 /**
@@ -20,7 +19,8 @@ class EffectApiDemoActivity : ComponentActivity() {
         setContent {
             ComposeDemoTheme {
                 Box(Modifier.safeDrawingPadding()) {
-                    LaunchEffectDemo()
+//                    LaunchEffectDemo()
+                    RememberCoroutineScopeDemo()
                 }
             }
         }
