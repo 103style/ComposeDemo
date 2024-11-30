@@ -21,7 +21,8 @@ class EffectApiDemoActivity : ComponentActivity() {
                 Box(Modifier.safeDrawingPadding()) {
 //                    LaunchEffectDemo()
 //                    RememberCoroutineScopeDemo()
-                    RememberUpdatedStateDemo()
+//                    RememberUpdatedStateDemo()
+                    DisposableEffectDemo(onBackPressedDispatcher)
                 }
             }
         }
