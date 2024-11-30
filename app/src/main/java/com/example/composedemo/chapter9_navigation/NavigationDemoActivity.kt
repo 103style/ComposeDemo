@@ -89,7 +89,7 @@ fun RallyApp(deeplink: String?) {
     // 处理深度跳转
     deeplink?.let {
         LaunchedEffect(Unit) {
-            navController.navigate(it.replace("rally://", ""))
+            navController.navigate(it)
         }
     }
 }
@@ -152,7 +152,7 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
 
         // 带参数的跳转
         composable(
-            route = "${Accounts.name}/{name}",
+            route = "$APP_DEEP_LINK_START${Accounts.name}/{name}",
             arguments = listOf(
                 //定义string类型的参数 name
                 navArgument("name") {
@@ -172,5 +172,5 @@ fun RallyNavHost(navController: NavHostController, modifier: Modifier = Modifier
 }
 
 private fun navigateUseArgument(navController: NavHostController, argument: String) {
-    navController.navigate("${Accounts.name}/$argument")
+    navController.navigate("$APP_DEEP_LINK_START${Accounts.name}/$argument")
 }

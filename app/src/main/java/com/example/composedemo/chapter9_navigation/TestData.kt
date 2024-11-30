@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+val APP_DEEP_LINK_START = "rally://"
 
 enum class RallyScreen(val icon: ImageVector, val body: @Composable ((String) -> Unit) -> Unit) {
     Overview(icon = Icons.Filled.PieChart, body = {
@@ -36,8 +37,13 @@ enum class RallyScreen(val icon: ImageVector, val body: @Composable ((String) ->
     companion object {
         fun formRouter(route: String?): RallyScreen {
             println("------route:$route")
-            println("------route:${route?.substringBefore("/")}")
-            return when (route?.substringBefore("/")) {
+            val res = if (route?.startsWith(APP_DEEP_LINK_START) == true) {
+                route.replace(APP_DEEP_LINK_START, "")
+            } else {
+                route
+            }
+            println("------res:${res?.substringBefore("/")}")
+            return when (res?.substringBefore("/")) {
                 Accounts.name -> Accounts
                 Bills.name -> Bills
                 Overview.name, null -> Overview
