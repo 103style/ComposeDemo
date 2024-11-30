@@ -23,7 +23,8 @@ class EffectApiDemoActivity : ComponentActivity() {
 //                    RememberCoroutineScopeDemo()
 //                    RememberUpdatedStateDemo()
 //                    DisposableEffectDemo(onBackPressedDispatcher)
-                    SideEffectDemo()
+//                    SideEffectDemo()
+                    ProduceStateDemo()
                 }
             }
         }
