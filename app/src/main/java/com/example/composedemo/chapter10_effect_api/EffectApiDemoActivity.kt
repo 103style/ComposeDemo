@@ -20,7 +20,8 @@ class EffectApiDemoActivity : ComponentActivity() {
             ComposeDemoTheme {
                 Box(Modifier.safeDrawingPadding()) {
 //                    LaunchEffectDemo()
-                    RememberCoroutineScopeDemo()
+//                    RememberCoroutineScopeDemo()
+                    RememberUpdatedStateDemo()
                 }
             }
         }
