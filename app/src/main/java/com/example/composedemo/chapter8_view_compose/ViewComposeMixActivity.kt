@@ -81,7 +81,7 @@ private fun ContentView() {
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "Item:$it")
+                    Text(text = "Compose Item:$it")
                 }
 
             }

@@ -9,10 +9,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,15 +39,20 @@ import com.example.composedemo.ui.theme.ComposeDemoTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // 设置成全屏模式
         setContent {
             ComposeDemoTheme {
-                LazyColumn {
-                    items(10) {
-                        MessageCard(
-                            "Jack" + it,
-                            "Android Developer and keeper. this is detail info test message."
-                        )
+                // safeDrawingPadding 安全绘制边界，
+                // 这个修饰符的主要目的是确保 UI 元素不会被系统 UI（如状态栏、导航栏或其他系统界面元素）遮挡，
+                // 从而提供更好的用户体验。
+                Box(Modifier.safeDrawingPadding()) {
+                    LazyColumn {
+                        items(10) {
+                            MessageCard(
+                                "Jack" + it,
+                                "Android Developer and keeper. this is detail info test message."
+                            )
+                        }
                     }
                 }
             }
