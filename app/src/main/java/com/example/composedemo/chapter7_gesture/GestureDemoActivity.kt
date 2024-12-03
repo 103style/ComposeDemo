@@ -320,7 +320,7 @@ fun TransformableDemo() {
             .size(200.dp, 100.dp),
         contentAlignment = Alignment.Center) {
         Text(
-            text = "安装平移、缩放、旋转 操作，模拟器笔记本按住control键操作",
+            text = "平移、缩放、旋转 操作，模拟器笔记本按住control键操作",
             color = Color.White,
             modifier = Modifier.padding(16.dp)
         )
