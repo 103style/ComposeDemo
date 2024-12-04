@@ -59,7 +59,7 @@ private fun ScaffoldDemo(
                 // 重复点击的时候，会发现上一个未执行完成的动画会被取消
                 state.value += 1
             }) {
-                Text("Error occurs")
+                Text("Error occurs - ${state.value}")
             }
         }
     })

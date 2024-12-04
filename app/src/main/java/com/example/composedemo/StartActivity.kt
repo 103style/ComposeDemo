@@ -45,7 +45,7 @@ class StartActivity : ComponentActivity() {
                 // 从而提供更好的用户体验。
                 Box(Modifier.safeDrawingPadding()) {
                     LazyColumn {
-                        items(10) {
+                        items(demoList.size) {
                             ItemDemo(it)
                         }
                     }
