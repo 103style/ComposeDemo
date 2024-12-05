@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -48,6 +49,11 @@ class StartActivity : ComponentActivity() {
                         items(demoList.size) {
                             ItemDemo(it)
                         }
+
+                        // LazyColumn测试
+//                        items(100){
+//                            ItemTest(it)
+//                        }
                     }
                 }
             }
@@ -104,4 +110,11 @@ class StartActivity : ComponentActivity() {
 }
 
 
+@Composable
+fun ItemTest(index:Int){
+    println("index:$index")
+    Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center){
+        Text("Item:$index")
+    }
+}
 
