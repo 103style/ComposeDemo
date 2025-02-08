@@ -991,11 +991,13 @@ Row(...) {
 参考代码：[https://github.com/103style/ComposeDemo/commit/6f1130692498a0355bc77b70ee9717006ba4bb9e](https://github.com/103style/ComposeDemo/commit/6f1130692498a0355bc77b70ee9717006ba4bb9e)
 
 
+
 ### 官方介绍 & 选择合适的动画API
 * [动画官方介绍](https://developer.android.com/develop/ui/compose/animation/introduction) 
 * [自定义动画 ](https://developer.android.com/develop/ui/compose/animation/customize)
 * 参考下图确认用哪种 API 来实现动画效果。
   [https://developer.android.com/develop/ui/compose/animation/choose-api](https://developer.android.com/develop/ui/compose/animation/choose-api) 
+  ![image](https://github.com/user-attachments/assets/d06ff758-2d5b-4ef2-b819-6bf5ef13967d)
 
 
 
