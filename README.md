@@ -21,7 +21,7 @@ Jetpack Compose 的核心是可组合函数。
 [项目配置](https://developer.android.com/develop/ui/compose/setup )
 
 示例代码如下：
-```
+```Kotlin
 @Preview
 @Composable
 fun MessagePreView() { // setContentView中调用这个函数
@@ -51,7 +51,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 需要修改 宽高/边距/背景/点击等都是通过 可组合函数参数 或者 modifier操作符 来修改。
 
 * Text：相当于TextView
-  ```
+  ```Kotlin
   Text( 
       text = "确认",
       modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -60,7 +60,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   ```
 
 * TextField：相当于InputView
-  ```
+  ```Kotlin
   TextField(
       value = "默认显示文案",
       onValueChange = { value ->
@@ -73,7 +73,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   ```
 
 * Button：类似Button View，不过显示的文案需要内部再设置 Text
-  ```
+  ```Kotlin
   Button(onClick = { /*TODO*/ }) {
       Text("确认")
   }
@@ -85,7 +85,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   Icon主要是显示 矢量图/位图这些
   
   IconButton 和 Button一样，主要是默认显示样式的区别，需要内部再设置 Icon，
-  ```
+  ```Kotlin
   // painterResource 相当于 R.drawable.xxx
   Image(painter = painterResource(R.drawable.user_avatar), null)
   
@@ -97,7 +97,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 * Card：相当于 androidx.cardview.widget.CardView
   
   https://developer.android.com/develop/ui/compose/components/card 
-  ```
+  ```Kotlin
   Card(
       colors = CardDefaults.cardColors(
           containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -136,7 +136,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 
 
 * Box： 类似FrameLayout
-  ```
+  ```Kotlin
   Box(Modifier.fillMaxSize() // 宽高都mactch_parent
       .background(Color.Red), 
       contentAlignment = Alignment.Center // 设置内容居中
@@ -174,7 +174,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   * 本身就支持滚动，因此不需要额外添加 Modifier.verticalScroll()。
 
 * FlowLayout： 对应实现是 FlowRow / FlowColumn, 相当于在 Row/Column的基础上新增了 内容显示不下直接换行。
-  ```
+  ```Kotlin
   FlowRow(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceAround
@@ -191,7 +191,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 
 
 * Surface： 提供了灵活的方式来创建具有背景、形状和阴影的 UI 元素。它可以用于构建各种 UI 组件，如卡片、按钮和对话框等。通过结合 Material Design 的主题和样式，Surface 可以帮助你快速构建美观且一致的用户界面。
-  ```
+  ```Kotlin
   Surface(
       modifier = Modifier.padding(32.dp).fillMaxWidth(),
       color = Color.White,
@@ -222,7 +222,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 
 * 使用ConstraintLayout
   是用 createRefs 或者 createRefFor 创建引用， ConstraintLayout中的每个可组合项都需要有与之关联的引用。
-  ```
+  ```Kotlin
   @Composable
   fun ConstraintLayoutDemo() {
       ConstraintLayout {
@@ -250,7 +250,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   参考代码：[https://github.com/103style/ComposeDemo/commit/7ea96e4ebc6aa5986e19d6172d52da91977c9708](https://github.com/103style/ComposeDemo/commit/7ea96e4ebc6aa5986e19d6172d52da91977c9708)
 
 * Scaffold： 实现了 Material Design 的基本视图界面结构
-  ```
+  ```Kotlin
   Scaffold(
       topBar = { ... },
       bottomBar = { ...},
@@ -292,7 +292,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 
 ## 本地资源读取
 * stringResource：相当于 getString(R.String.xxx)
-  ```
+  ```Kotlin
   // In the res/values/strings.xml file
   // <string name="compose">Jetpack Compose</string>
   Text(
@@ -306,7 +306,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   ```
 
 * dimensionResource：相当于 getDimensionPixelOffset(R.dimen.xxx) 
-  ```
+  ```Kotlin
   // In the res/values/dimens.xml file
   // <dimen name="padding_small">8dp</dimen>
   
@@ -315,14 +315,14 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   ```
 
 * colorResource
-  ```
+  ```Kotlin
   // In the res/colors.xml file
   // <color name="purple_200">#FFBB86FC</color>
   Divider(color = colorResource(R.color.purple_200))
   ```
 	
 * painterResource
-  ```// Files in res/drawable folders. 
+  ```Kotlin// Files in res/drawable folders. 
   // - res/drawable-nodpi/ic_logo.xml
   Icon(
       painter = painterResource(id = R.drawable.ic_logo),
@@ -331,7 +331,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
   ```
 
 * AnimatedImageVector.animatedVectorResource
-  ```
+  ```Kotlin
   // Files in res/drawable folders.
   // - res/drawable/ic_hourglass_animated.xml
   val image = AnimatedImageVector.animatedVectorResource(R.drawable.ic_hourglass_animated)
@@ -352,7 +352,7 @@ Compose 组件基本默认宽高都是 wrap_content 的，
 
 ![image](https://github.com/user-attachments/assets/800829cb-942d-4498-ad19-61f492b0bbb0)
 
-```
+```Kotlin
 @Composable
 fun Test() {
     var switch by remember { mutableStateOf(false) }
@@ -373,7 +373,7 @@ fun Test() {
 * remember  & rememberSaveable ：用于在组合过程中保存状态或计算结果。
 它的主要作用是确保在重组时保持某些值的持久性，从而避免不必要的重新计算。
 rememberSaveable 和 remember的区别就是前者在 配置改变时（如屏幕旋转）其值不会丢失。
-```
+```Kotlin
 @Composable
 fun Test(key: Any = Any()) {
     var name = "每次都是同新的对象" 
@@ -406,7 +406,7 @@ fun Test(key: Any = Any()) {
 创建的工程是 ComposeDemo， 生成的默认主题就是 ComposeDemoTheme
 
 默认之提供了 白天/ 夜间 两种默认， 通过 drakTheme 来判断
-```
+```Kotlin
 @Composable
 fun ComposeDemoTheme(darkTheme: Boolean = isSystemInDarkTheme() ...) {
     // 可以理解为根据条件判断 设置QUI在对应主题的配色
@@ -440,7 +440,7 @@ private val LightColorScheme = lightColorScheme(
 ```
 
 使用主题颜色
-```
+```Kotlin
 ComposeDemoTheme {
     Text("这只是一个文案",
         style = MaterialTheme.typography.bodySmall, // 读取配置主题的字体设计
@@ -485,7 +485,7 @@ Column 和 Row 等所有较高级别的布局都使用 Layout 可组合项构建
 修改原本的布局的模版代码
 ![image](https://github.com/user-attachments/assets/76cb7173-3993-474f-89e0-624855e8b9d8)
 
-```
+```Kotlin
 fun Modifier.firstBaselineToTop(firstBaselineToTop: Dp) =
     this.then(layout { measurable, constraints ->
         // 测量元素
@@ -509,7 +509,7 @@ fun Modifier.firstBaselineToTop(firstBaselineToTop: Dp) =
 
 ### 创建自定义布局 - Layout
 自定义布局的模版代码
-```
+```Kotlin
 @Composable
 fun FunctionName(
     modifier: Modifier = Modifier,
@@ -560,7 +560,7 @@ fun FunctionName(
 drawContent() 绘制本身的内容， 在 drawContent() 之前调用就是背景，在drawContent()之后调用就是前景。
 
 相当于在 View 的 onDraw(canvas)， drawContent()就是 super.onDraw(canvas)， 和在它之前和之后调用绘制api的效果一样。
-```
+```Kotlin
 Column(
     modifier = Modifier
         .fillMaxSize()
@@ -585,7 +585,7 @@ Column(
 在当前可组合项后面绘制内容, 可以理解为在 drawWithContent 操作符中的  drawContent() 之前绘制内容，会被实际的内容覆盖。
 
 也就是在 super.onDraw(canvas)之前调用。
-```
+```Kotlin
 Text("Hello Compose!", modifier = Modifier
     .drawBehind {
         // 绘制圆角矩形
@@ -611,7 +611,7 @@ Text("Hello Compose!", modifier = Modifier
 下面 drawWithCache 中 brush对象，每次点击触发重组的时候都不会重新创建。
 
 相当于我们在自定义View的时候，把频繁创建的对象定义成全局变量一样。
-```
+```Kotlin
 var count by remember { mutableIntStateOf(0) }
 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     Text(
@@ -634,7 +634,7 @@ Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 ### Modifier.graphicsLayer
 
 可以对组件进行 透明度、放缩、旋转、裁剪 等操作，
-```
+```Kotlin
 Text("Hello Compose!", modifier = Modifier
     .background(Color.Blue)
     .graphicsLayer {
@@ -656,7 +656,7 @@ Text("Hello Compose!", modifier = Modifier
 ```
 
 裁切
-```
+```Kotlin
 Box(modifier = Modifier
     .size(200.dp)
     .graphicsLayer { // 将box从 200的正方形裁剪成圆形
@@ -680,7 +680,7 @@ Box(modifier = Modifier
 ### Canvas
 
 相当于自己实现 View 的 OnDraw。
-```
+```Kotlin
 val image = ImageBitmap.imageResource(id = R.drawable.image)
 Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
     drawImage(image)
@@ -708,7 +708,7 @@ Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
 ### 按下、点击、单击、长按 的事件监听
 [https://github.com/103style/ComposeDemo/commit/d81448d5859765a5135073540f69765a788cf2cc](https://github.com/103style/ComposeDemo/commit/d81448d5859765a5135073540f69765a788cf2cc)
 
-```
+```Kotlin
 @Composable
 fun ClickableDemo() {
     val count = remember {
@@ -740,7 +740,7 @@ Box & Column 这种默认不支持滑动的布局，可以通过添加 Modifier.
 
 如果需要手动操作滑动时，可以定义 rememberScrollState() 为一个变量，通过调用 state.animateScrollTo 或者state的其他方法来主动触发滑动。
 
-```
+```Kotlin
 @Composable
 fun NestedScrollDemo() {
     val state = rememberScrollState()
@@ -767,7 +767,7 @@ fun NestedScrollDemo() {
 Modifier.draggable 只能单方向滑动
 
 Modifier.pointerInput 的 detectDragGuestures 可以实现随意滑动
-```
+```Kotlin
 Text(text = "Drag me",
         modifier = Modifier
             .offset { IntOffset(offsetX.roundToInt(), 0) }
@@ -795,7 +795,7 @@ Box(modifier = Modifier.fillMaxSize()) {
 
 
 ### 使用Modifier.graphicsLayer{}.transformable(state)实现多点操控 来实现 平移/旋转/缩放
-```
+```Kotlin
 @Composable
 fun TransformableDemo() {
     var scale by remember { mutableFloatStateOf(1f) }
@@ -828,7 +828,7 @@ fun TransformableDemo() {
 主要是 awaitEachGesture 内部的  awaitFirstDown / waitForUpOrCancellation。
 
 awaitEachGesture 就相当于 onTouchEvent
-```
+```Kotlin
 awaitEachGesture {
     ...
     // 收到第一个按下事件然后消费
@@ -849,7 +849,7 @@ awaitEachGesture {
 detectDragGestures
 
 awaitPointerEventScope
-```
+```Kotlin
 var offsetX by remember { mutableStateOf(0f) }
 var offsetY by remember { mutableStateOf(0f) }
 var isDragging by remember { mutableStateOf(false) }
@@ -915,7 +915,7 @@ https://developer.android.com/develop/ui/compose/touch-input/pointer-input/under
 [https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566](https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566)
 
 animateColorAsState
-```
+```Kotlin
 val bgColor by animateColorAsState(
     if (isGreenBg) Color.Green else Color.Blue, label = "color"
 )
@@ -932,7 +932,7 @@ Column(modifier = Modifier
 
 ### AnimatedVisibility 实现 显示&隐藏 动画
 [https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566](https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566)
-```
+```Kotlin
 var visible by remember {
     mutableStateOf(true)
 }
@@ -946,7 +946,7 @@ AnimatedVisibility(visible) {
 
 ### Modifier.animateContentSize()来实现内容的弹开动画
 [https://github.com/103style/ComposeDemo/commit/c2c8c639453f32db125ac4f6422e7e7f89405f94](https://github.com/103style/ComposeDemo/commit/c2c8c639453f32db125ac4f6422e7e7f89405f94)
-```
+```Kotlin
 // 在大小发生变化时，使用 animateContentSize() 实现动画效果。
 var expanded by remember { mutableStateOf(false) }
 Box(
@@ -965,7 +965,7 @@ Box(
 
 ### rememberInfiniteTransition.animateFloat 实现动画的重复
 [https://github.com/103style/ComposeDemo/commit/910860b8a8cfbe39cd666b9433f2e449ce6e03de](https://github.com/103style/ComposeDemo/commit/910860b8a8cfbe39cd666b9433f2e449ce6e03de)
-```
+```Kotlin
 val infiniteTransition = rememberInfiniteTransition(label = "")
 val alpha by infiniteTransition.animateFloat(
     initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable(
@@ -1007,7 +1007,7 @@ Row(...) {
 ## View与Compose混用
 像播放视频等，Compose就需要通过 AndroidView 组件来调用 ExoPlayer中的PlayerView来实现
 * Android调用Compose
-```
+```Kotlin
 <androidx.compose.ui.platform.ComposeView
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -1020,7 +1020,7 @@ findViewById<ComposeView>(R.id.content).setContent {
 ```
 
 * Compose中通过 AndroidView 使用View组件
-```
+```Kotlin
 /**
  * Compose中使用View
  */
