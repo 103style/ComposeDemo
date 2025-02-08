@@ -1,8 +1,6 @@
-![image](https://github.com/user-attachments/assets/186bc898-e380-41ad-a820-a9ffc3928394)Compose 学习记录
-* https://www.bilibili.com/video/BV1ob4y1a7ad
-
-
 # Compose入门
+Compose 学习记录
+* https://www.bilibili.com/video/BV1ob4y1a7ad
 
 ## Compose介绍
 Jetpack Compose 是 Google 于 2019 年 I/O 大会上推出的全新工具包，旨在简化原生 Android 界面的构建。
