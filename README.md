@@ -1150,17 +1150,23 @@ snapshotFlow 会运行传入的block，并发出从块中读取的State对象的
 
 
 ## Compose参考资料
-1.https://developer.android.com/develop/ui/compose/documentation 👍
-2.Compose教程 👍
-3.视频：https://www.bilibili.com/video/BV1ob4y1a7ad/   👍
-4.Jetpack Compose 太难学？别怕，帮你弄懂其中的关键概念
-5.了解 Compose 的重组作用域 | 你好 Compose
-6.Compose副作用
-7.Compose状态管理
-8.Compose 性能优化
-9.https://mp.weixin.qq.com/s?__biz=Mzg5MzYxNTI5Mg==&mid=2247496602&idx=1&sn=3ace800937971e9026ddab88fa22a365&chksm=c02e9e49f759175fb23f4d34f4bcb8e2be63aab91bb1df3418ece250708c36bae26bf9a73b8b&mpshare=1&scene=1&srcid=05096tqdLlzER1JWCk8j7NTE&sharer_shareinfo=2bdf1bdea341858de85fb9876c436cf8&sharer_shareinfo_first=2bdf1bdea341858de85fb9876c436cf8&version=4.1.26.90928&platform=mac&nwr_flag=1#wechat_redirect 
+* [https://developer.android.com/develop/ui/compose/documentation](https://developer.android.com/develop/ui/compose/documentation) 👍
 
-10.Demo工程:https://git.woa.com/kempluo/ComposeLearn 
+* [Compose教程](https://compose.funnysaltyfish.fun/docs/) 👍
+
+* 视频：[https://www.bilibili.com/video/BV1ob4y1a7ad/](https://www.bilibili.com/video/BV1ob4y1a7ad/)   👍
+
+* [Jetpack Compose 太难学？别怕，帮你弄懂其中的关键概念](https://mp.weixin.qq.com/s?__biz=Mzg5MzYxNTI5Mg==&mid=2247494871&idx=1&sn=69dbcace5db7cae784d9f1c8dbb6c0ba&chksm=c02e8104f75908124282e10ffd7adc3c3cf858e919057984ec866f44227a383bc6b725f56ff3&scene=21&version=4.1.22.90918&platform=mac&nwr_flag=1#wechat_redirect)
+
+* [了解 Compose 的重组作用域 | 你好 Compose](https://compose.funnysaltyfish.fun/docs/principle/recompositionScope/)
+
+* [Compose副作用](https://juejin.cn/post/7338645701658804261)
+
+* [Compose状态管理](https://developer.android.com/topic/architecture/ui-layer/stateholders?hl=zh-cn)
+
+* [Compose 性能优化](https://developer.android.com/develop/ui/compose/performance/bestpractices?hl=zh-cn)
+
+* [来自 Twitter 的 17 条 Compose 开发规范](https://mp.weixin.qq.com/s?__biz=Mzg5MzYxNTI5Mg==&mid=2247496602&idx=1&sn=3ace800937971e9026ddab88fa22a365&chksm=c02e9e49f759175fb23f4d34f4bcb8e2be63aab91bb1df3418ece250708c36bae26bf9a73b8b&mpshare=1&scene=1&srcid=05096tqdLlzER1JWCk8j7NTE&sharer_shareinfo=2bdf1bdea341858de85fb9876c436cf8&sharer_shareinfo_first=2bdf1bdea341858de85fb9876c436cf8&version=4.1.26.90928&platform=mac&nwr_flag=1#wechat_redirect) 
 
 
 
