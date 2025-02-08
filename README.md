@@ -539,23 +539,28 @@ fun FunctionName(
 ```
 
 * 自己实现column的布局
-https://git.woa.com/kempluo/ComposeLearn/commit/eb389d91fd135673f5d1cf19e914d1c0c4752cbd 
+  [https://github.com/103style/ComposeDemo/commit/eb389d91fd135673f5d1cf19e914d1c0c4752cbd](https://github.com/103style/ComposeDemo/commit/eb389d91fd135673f5d1cf19e914d1c0c4752cbd)
 
 * 自定义实现 gridview
-https://git.woa.com/kempluo/ComposeLearn/commit/eead7baa5bed4a066f71c7466dade9a77e50b125 
+  [https://github.com/103style/ComposeDemo/commit/eead7baa5bed4a066f71c7466dade9a77e50b125](https://github.com/103style/ComposeDemo/commit/eead7baa5bed4a066f71c7466dade9a77e50b125)
 
-自定义布局官方文档：https://developer.android.com/develop/ui/compose/layouts/custom 
+自定义布局官方文档：[https://developer.android.com/develop/ui/compose/layouts/custom ](https://developer.android.com/develop/ui/compose/layouts/custom )
 
 
+---
 
-自定义绘制
+
+## 自定义绘制
 在 Compose 中绘制自定义内容有可组合函数 Canvas 以及 几个实用的 Modifiers 修饰符
 
-Modifier.drawWithContent
-NTCompse暂不支持
+### Modifier.drawWithContent
+
 内部调用的Z轴一次递增， 后面绘制的内容会覆盖前面绘制的内容。
+
 drawContent() 绘制本身的内容， 在 drawContent() 之前调用就是背景，在drawContent()之后调用就是前景。
+
 相当于在 View 的 onDraw(canvas)， drawContent()就是 super.onDraw(canvas)， 和在它之前和之后调用绘制api的效果一样。
+```
 Column(
     modifier = Modifier
         .fillMaxSize()
@@ -573,12 +578,14 @@ Column(
 ) {
    Box(modifier = Modifier.fillMaxSize().background(Color.Red))
 }
+```
 
+### Modifier.drawBehind
 
-Modifier.drawBehind
-NTCompse暂不支持
 在当前可组合项后面绘制内容, 可以理解为在 drawWithContent 操作符中的  drawContent() 之前绘制内容，会被实际的内容覆盖。
+
 也就是在 super.onDraw(canvas)之前调用。
+```
 Text("Hello Compose!", modifier = Modifier
     .drawBehind {
         // 绘制圆角矩形
@@ -587,19 +594,24 @@ Text("Hello Compose!", modifier = Modifier
     //.background(Color.Blue) //如果加上设置背景，上面的drawBehind就不会生效，如果放到drawBehind前就会生效，因为Modifier执行和先后顺序有关
     .padding(16.dp)
 )
+```
+![image](https://github.com/user-attachments/assets/a998ddbd-c4fb-4890-bbd4-61f98d1903bd)
 
 
+### Modifier.drawWithCache
 
-Modifier.drawWithCache
-NTCompse暂不支持
 该修饰符会缓存在其内部创建的对象。
+
 只要绘制区域的大小保持不变，或者读取的状态对象未发生变化，这些对象就会被缓存。
+
 这有助于提升绘制调用的性能，因为在绘制过程中不需要重新分配对象（例如：Brush、Shader、Path 等）。
 
 内部可以调用 onDrawBehind {} 或者 onDrawWithContent {}，如果同时调用两个函数，那只有后面的回生效。
 
 下面 drawWithCache 中 brush对象，每次点击触发重组的时候都不会重新创建。
+
 相当于我们在自定义View的时候，把频繁创建的对象定义成全局变量一样。
+```
 var count by remember { mutableIntStateOf(0) }
 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     Text(
@@ -617,11 +629,12 @@ Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         },
     )
 }
+```
 
+### Modifier.graphicsLayer
 
-Modifier.graphicsLayer
-NTCompse支持
 可以对组件进行 透明度、放缩、旋转、裁剪 等操作，
+```
 Text("Hello Compose!", modifier = Modifier
     .background(Color.Blue)
     .graphicsLayer {
@@ -640,9 +653,10 @@ Text("Hello Compose!", modifier = Modifier
         this.transformOrigin = TransformOrigin(0f, 0f) // 设置作用点
     }
     .padding(16.dp))
-
+```
 
 裁切
+```
 Box(modifier = Modifier
     .size(200.dp)
     .graphicsLayer { // 将box从 200的正方形裁剪成圆形
@@ -656,15 +670,17 @@ Box(modifier = Modifier
         modifier = Modifier.align(Alignment.Center)
     )
 }
+```
+![image](https://github.com/user-attachments/assets/75066f0e-92c9-4427-b39d-ed6120a92039)
 
 
 
+图形修饰符官方介绍：[https://developer.android.com/develop/ui/compose/graphics/draw/overview?hl=zh-cn#graphicsLayer ](https://developer.android.com/develop/ui/compose/graphics/draw/overview?hl=zh-cn#graphicsLayer )
 
-图形修饰符官方介绍：https://developer.android.com/develop/ui/compose/graphics/draw/overview?hl=zh-cn#graphicsLayer 
+### Canvas
 
-Canvas
-NTCompse支持
 相当于自己实现 View 的 OnDraw。
+```
 val image = ImageBitmap.imageResource(id = R.drawable.image)
 Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
     drawImage(image)
@@ -673,20 +689,26 @@ Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
     
     // 绘制自己想要的任何内容
 })
+```
 
 
+### 官方介绍
+更多请查看官方文档：[https://developer.android.com/develop/ui/compose/graphics/draw/overview](https://developer.android.com/develop/ui/compose/graphics/draw/overview) 
 
-官方介绍
-更多请查看官方文档：https://developer.android.com/develop/ui/compose/graphics/draw/overview 
-绘制的图像函数参考：https://developer.android.com/develop/ui/compose/graphics/draw/shapes 
-渐变和着色器：https://developer.android.com/develop/ui/compose/graphics/draw/brush 
-https://compose.funnysaltyfish.fun/docs/design/graphics/customDraw 
+绘制的图像函数参考：[https://developer.android.com/develop/ui/compose/graphics/draw/shapes](https://developer.android.com/develop/ui/compose/graphics/draw/shapes) 
+
+渐变和着色器：[https://developer.android.com/develop/ui/compose/graphics/draw/brush](https://developer.android.com/develop/ui/compose/graphics/draw/brush) 
+
+[自定义绘制](https://compose.funnysaltyfish.fun/docs/design/graphics/customDraw )
 
 
+---
 
-手势处理
-按下、点击、单击、长按 的事件监听
-https://git.woa.com/kempluo/ComposeLearn/commit/d81448d5859765a5135073540f69765a788cf2cc 
+## 手势处理
+### 按下、点击、单击、长按 的事件监听
+[https://github.com/103style/ComposeDemo/commit/d81448d5859765a5135073540f69765a788cf2cc](https://github.com/103style/ComposeDemo/commit/d81448d5859765a5135073540f69765a788cf2cc)
+
+```
 @Composable
 fun ClickableDemo() {
     val count = remember {
@@ -711,11 +733,14 @@ fun ClickableDemo() {
             .padding(horizontal = 50.dp, vertical = 40.dp),
     )
 }
+```
 
-
-使用Modifier配置verticalScroll、scrollable 实现滑动以及嵌套滑动
+### 使用Modifier配置verticalScroll、scrollable 实现滑动以及嵌套滑动
 Box & Column 这种默认不支持滑动的布局，可以通过添加 Modifier.verticalScroll(rememberScrollState()) 来实现滑动。
+
 如果需要手动操作滑动时，可以定义 rememberScrollState() 为一个变量，通过调用 state.animateScrollTo 或者state的其他方法来主动触发滑动。
+
+```
 @Composable
 fun NestedScrollDemo() {
     val state = rememberScrollState()
@@ -733,12 +758,16 @@ fun NestedScrollDemo() {
         }
     }
 }
+```
 
-参考代码：https://git.woa.com/kempluo/ComposeLearn/commit/b60907fd86448108876acaab2ce6292853907958 
+参考代码：[https://github.com/103style/ComposeDemo/commit/b60907fd86448108876acaab2ce6292853907958](https://github.com/103style/ComposeDemo/commit/b60907fd86448108876acaab2ce6292853907958)
 
-使用Modifier.draggable 和 Modifier.pointerInput 的 detectDragGuestures 来实现 单方向拖动 以及 随意拖动
+
+### 使用Modifier.draggable 和 Modifier.pointerInput 的 detectDragGuestures 来实现 单方向拖动 以及 随意拖动
 Modifier.draggable 只能单方向滑动
+
 Modifier.pointerInput 的 detectDragGuestures 可以实现随意滑动
+```
 Text(text = "Drag me",
         modifier = Modifier
             .offset { IntOffset(offsetX.roundToInt(), 0) }
@@ -760,10 +789,13 @@ Box(modifier = Modifier.fillMaxSize()) {
                 }
             })
 }
+```
 
-参考代码：https://git.woa.com/kempluo/ComposeLearn/commit/c0d4592e830a13f9f6d358c8f218bcb7669002b9 
+参考代码：[https://github.com/103style/ComposeDemo/commit/c0d4592e830a13f9f6d358c8f218bcb7669002b9](https://github.com/103style/ComposeDemo/commit/c0d4592e830a13f9f6d358c8f218bcb7669002b9)
 
-使用Modifier.graphicsLayer{}.transformable(state)实现多点操控 来实现 平移/旋转/缩放
+
+### 使用Modifier.graphicsLayer{}.transformable(state)实现多点操控 来实现 平移/旋转/缩放
+```
 @Composable
 fun TransformableDemo() {
     var scale by remember { mutableFloatStateOf(1f) }
@@ -787,13 +819,16 @@ fun TransformableDemo() {
             .background(Color.Blue)
             .size(100.dp, 200.dp))
 }
+```
+参考代码：[https://github.com/103style/ComposeDemo/commit/06afe95ac5cb5e34f7a464ba962e577e8e359ec8](https://github.com/103style/ComposeDemo/commit/06afe95ac5cb5e34f7a464ba962e577e8e359ec8)
 
-参考代码：https://git.woa.com/kempluo/ComposeLearn/commit/06afe95ac5cb5e34f7a464ba962e577e8e359ec8 
-
-Compose的 "onTouchEvent" 
+### Compose的 "onTouchEvent" 
 先看下 clickable 操作符内部的主要处理，
+
 主要是 awaitEachGesture 内部的  awaitFirstDown / waitForUpOrCancellation。
+
 awaitEachGesture 就相当于 onTouchEvent
+```
 awaitEachGesture {
     ...
     // 收到第一个按下事件然后消费
@@ -807,11 +842,14 @@ awaitEachGesture {
         onTap?.invoke(up.position)
     }
 }
-
+```
 
 那怎么监听Move事件呢？
+
 detectDragGestures
+
 awaitPointerEventScope
+```
 var offsetX by remember { mutableStateOf(0f) }
 var offsetY by remember { mutableStateOf(0f) }
 var isDragging by remember { mutableStateOf(false) }
@@ -864,17 +902,20 @@ fun PointerInputChange.changedToDown() = !isConsumed && !previousPressed && pres
 
 // 指示指针是否从按下状态变为未按下状态。可以用来检测抬起事件。
 fun PointerInputChange.changedToUp() = !isConsumed && previousPressed && !pressed
+```
 
-
-官方介绍
+### 官方介绍
 https://developer.android.com/develop/ui/compose/touch-input/pointer-input/understand-gestures 
 
 
 
-动画
-Modifier.animateColorAsState 实现颜色切换动画
-https://git.woa.com/kempluo/ComposeLearn/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566 
+## 动画
+### Modifier.animateColorAsState 实现颜色切换动画
+
+[https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566](https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566)
+
 animateColorAsState
+```
 val bgColor by animateColorAsState(
     if (isGreenBg) Color.Green else Color.Blue, label = "color"
 )
@@ -884,22 +925,28 @@ Column(modifier = Modifier
         isGreenBg = !isGreenBg
     }) {
 }
+```
+![image](https://github.com/user-attachments/assets/2c0fa334-7cb0-4c87-ad56-55b23de80827)
 
 
 
-AnimatedVisibility 实现 显示&隐藏 动画
-https://git.woa.com/kempluo/ComposeLearn/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566 
+### AnimatedVisibility 实现 显示&隐藏 动画
+[https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566](https://github.com/103style/ComposeDemo/commit/2f03d14d97fa6fe759c9b8e3d46042234cae6566)
+```
 var visible by remember {
     mutableStateOf(true)
 }
 AnimatedVisibility(visible) {
     // ...
 }
+```
+![image](https://github.com/user-attachments/assets/6b5c2b37-63c1-49cb-b248-1ddc5d6fc923)
 
 
 
-Modifier.animateContentSize()来实现内容的弹开动画
-https://git.woa.com/kempluo/ComposeLearn/commit/c2c8c639453f32db125ac4f6422e7e7f89405f94 
+### Modifier.animateContentSize()来实现内容的弹开动画
+[https://github.com/103style/ComposeDemo/commit/c2c8c639453f32db125ac4f6422e7e7f89405f94](https://github.com/103style/ComposeDemo/commit/c2c8c639453f32db125ac4f6422e7e7f89405f94)
+```
 // 在大小发生变化时，使用 animateContentSize() 实现动画效果。
 var expanded by remember { mutableStateOf(false) }
 Box(
@@ -910,12 +957,15 @@ Box(
             expanded = !expanded
         }
 )
+```
+![image](https://github.com/user-attachments/assets/f5321fa7-c5d5-4367-893c-d39011913031)
 
 
 
 
-rememberInfiniteTransition.animateFloat 实现动画的重复
-https://git.woa.com/kempluo/ComposeLearn/commit/910860b8a8cfbe39cd666b9433f2e449ce6e03de 
+### rememberInfiniteTransition.animateFloat 实现动画的重复
+[https://github.com/103style/ComposeDemo/commit/910860b8a8cfbe39cd666b9433f2e449ce6e03de](https://github.com/103style/ComposeDemo/commit/910860b8a8cfbe39cd666b9433f2e449ce6e03de)
+```
 val infiniteTransition = rememberInfiniteTransition(label = "")
 val alpha by infiniteTransition.animateFloat(
     initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable(
@@ -934,26 +984,28 @@ Row(...) {
         modifier = Modifier.background(Color.LightGray.copy(alpha = alpha))
     )
 }
-
+```
 
 
 以下是一个侧滑删除的效果
-参考代码：https://git.woa.com/kempluo/ComposeLearn/commit/6f1130692498a0355bc77b70ee9717006ba4bb9e 
+参考代码：[https://github.com/103style/ComposeDemo/commit/6f1130692498a0355bc77b70ee9717006ba4bb9e](https://github.com/103style/ComposeDemo/commit/6f1130692498a0355bc77b70ee9717006ba4bb9e)
 
 
-官方介绍 & 选择合适的动画API
-动画官方介绍：https://developer.android.com/develop/ui/compose/animation/introduction 
-自定义动画：https://developer.android.com/develop/ui/compose/animation/customize 
-参考下图确认用哪种 API 来实现动画效果。
-https://developer.android.com/develop/ui/compose/animation/choose-api 
-
-
+### 官方介绍 & 选择合适的动画API
+* [动画官方介绍](https://developer.android.com/develop/ui/compose/animation/introduction) 
+* [自定义动画 ](https://developer.android.com/develop/ui/compose/animation/customize)
+* 参考下图确认用哪种 API 来实现动画效果。
+  [https://developer.android.com/develop/ui/compose/animation/choose-api](https://developer.android.com/develop/ui/compose/animation/choose-api) 
 
 
 
-View与Compose混用
+---
+
+
+## View与Compose混用
 像播放视频等，Compose就需要通过 AndroidView 组件来调用 ExoPlayer中的PlayerView来实现
-●Android调用Compose	
+* Android调用Compose
+```
 <androidx.compose.ui.platform.ComposeView
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -963,10 +1015,10 @@ View与Compose混用
 findViewById<ComposeView>(R.id.content).setContent {
     ContentView()
 }
+```
 
-
-●Compose中通过 AndroidView 使用View组件
- NTCompse不支持
+* Compose中通过 AndroidView 使用View组件
+```
 /**
  * Compose中使用View
  */
@@ -983,91 +1035,121 @@ private fun ComposeUseView() {
         it.text = "我是Compose 中使用的TextView"
     })
 }
+```
 
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/3492595319a3912bccd14cd7633336794ce964e4 
+示例代码：[https://github.com/103style/ComposeDemo/commit/3492595319a3912bccd14cd7633336794ce964e4](https://github.com/103style/ComposeDemo/commit/3492595319a3912bccd14cd7633336794ce964e4)
+
+---
 
 
-
-EffectAPI -- 执行副作用操作
+## EffectAPI -- 执行副作用操作
 在 Jetpack Compose 中，Effect API 是一组用于处理副作用的 API，允许你在 Compose 的声明式 UI 中安全地执行副作用操作。
+
 副作用通常是指那些不直接影响 UI 状态的操作，例如网络请求、数据库操作、动画、定时器等。
 
-组合函数的生命周期：https://developer.android.com/develop/ui/compose/lifecycle 
-●Enter : 挂载到树上，首次显示
-●Composition : 重组刷新UI
-●Leave :  从树上移除，不再显示。
+组合函数的生命周期：[https://developer.android.com/develop/ui/compose/lifecycle](https://developer.android.com/develop/ui/compose/lifecycle) 
+* Enter : 挂载到树上，首次显示
+* Composition : 重组刷新UI
+* Leave :  从树上移除，不再显示。
+
+![image](https://github.com/user-attachments/assets/2e58a154-d9f3-46a5-9da1-52b43fbc9112)
 
 
 组合函数中没有自带的生命周期函数，想要监听其生命周期，及需要使用 EffectAPI.
-●LaunchEffect :  第一次调用Compose函数的时候调用。
-●DisposableEffect : 内部有一个 onDispose 函数，当页面退出的时调用。
-●SideEffect : compose函数每次执行的时候都会调用该方法。
+* LaunchEffect :  第一次调用Compose函数的时候调用。
+* DisposableEffect : 内部有一个 onDispose 函数，当页面退出的时调用。
+* SideEffect : compose函数每次执行的时候都会调用该方法。
 
-LaunchEffect
+
+### LaunchEffect
+
 如果在可组合函数中进行耗时操作，就需要将耗时操作放入协程中执行，而协程需要在作用域中创建。
+
 因此 Compose 提供了 LaunchedEffect 用于创建协程。
-●当 LaunchEffect 进入组件树时，会启动一个协程，并将block放入协程中执行。
-●当 可组合函数 从视图树上 detach 时，协程还未被执行完毕，该协程也将会被取消执行。
-●当 LaunchEffect 在重组时其key不变，那就不会被重新启动执行block.
-●当 LaunchEffect 在重组时其key变化了，则会先执行cancel，再重新启动一个新的协程执行block.
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/29579d3a87d9b1f56d76dbfab45f76ba92a063ef 
 
-rememberCoroutineScope
+* 当 LaunchEffect 进入组件树时，会启动一个协程，并将block放入协程中执行。
+* 当 可组合函数 从视图树上 detach 时，协程还未被执行完毕，该协程也将会被取消执行。
+* 当 LaunchEffect 在重组时其key不变，那就不会被重新启动执行block.
+* 当 LaunchEffect 在重组时其key变化了，则会先执行cancel，再重新启动一个新的协程执行block.
+示例代码：[https://github.com/103style/ComposeDemo/commit/29579d3a87d9b1f56d76dbfab45f76ba92a063ef](https://github.com/103style/ComposeDemo/commit/29579d3a87d9b1f56d76dbfab45f76ba92a063ef)
+
+### rememberCoroutineScope
 由于LaunchEffect 是可组合函数， 因此只能在其他可组合函数中使用。
-●想要在 可组合函数之外启动协程，且需要限制协程的作用域，以便在退出组合函数后自动取消。
-●需要手动控制一个或多个协程的生命周期。
-可以使用 rememberCoroutineScope.  
+* 想要在 可组合函数之外启动协程，且需要限制协程的作用域，以便在退出组合函数后自动取消。
+* 需要手动控制一个或多个协程的生命周期。
+可以使用 rememberCoroutineScope.
+
 相当于LifecycleOwner 的 lifecycleScope、ViewModel 的 viewModelScope
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/a624196c20abafc450d6835d6999df9c7fe6d21c 
 
-rememberUpdatedState
+示例代码：[https://github.com/103style/ComposeDemo/commit/a624196c20abafc450d6835d6999df9c7fe6d21c](https://github.com/103style/ComposeDemo/commit/a624196c20abafc450d6835d6999df9c7fe6d21c)
+
+### rememberUpdatedState
 LaunchedEffect 的key值更新 就会重新启动。
+
 但是有时候需要使用最新的参数值，又不想重新启动LaunchEffect, 
+
 就需要用 rememberUpdatedState，
+
 它的作用是给某一个参数创建一个引用来跟踪这些参数，并保证其值被使用时是最新值，参数改变时不重启effect。
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/1e626a18a5f981d95943539b5c17ba9128d2fb08 
 
-DisposableEffect
+示例代码：[https://github.com/103style/ComposeDemo/commit/1e626a18a5f981d95943539b5c17ba9128d2fb08](https://github.com/103style/ComposeDemo/commit/1e626a18a5f981d95943539b5c17ba9128d2fb08) 
+
+
+### DisposableEffect
 DisposableEffect 也是一个可组合函数，当它在其key值变化 或者 组合函数离开树时，会取消之前启动的协程，
+
 并在会取消协程前调用其回收方法进行资源回收相关的操作。
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/ab752f0412aca7a0bdd31e0e41428a4ae63d684d 
+
+示例代码：[https://github.com/103style/ComposeDemo/commit/ab752f0412aca7a0bdd31e0e41428a4ae63d684d](https://github.com/103style/ComposeDemo/commit/ab752f0412aca7a0bdd31e0e41428a4ae63d684d) 
 
 
-SideEffect
+### SideEffect
 SideEffect 是简化版的 DisposableEffect，
+
 SideEffect 并不接受任何key值，所以每次重组都会执行block。
+
 当不需要 onDispose、不需要参数控制时使用 SideEffect。
+
 SideEffect 主要用来 与非Compose管理的对象共享Compose状态。
+
 SideEffect 在组合函数 被创建并载入视图树后 才会被调用。
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/d93dbd4bb5156568b166339a0271bef7875df23e 
+
+示例代码：[https://github.com/103style/ComposeDemo/commit/d93dbd4bb5156568b166339a0271bef7875df23e](https://github.com/103style/ComposeDemo/commit/d93dbd4bb5156568b166339a0271bef7875df23e) 
 
 
-produceState
+### produceState
 produceState 可以将非Compose状态(Flow、LiveData、RxJava) 转换为 Compose状态。
+
 它接收一个lambda表达式作为函数体，能将这些入参经过一些操作后 生成一个State类型变量 并返回。
-●produceState 创建了一个协程，但它可用于观察非挂起的数据源。
-●当produceState进入Composition时，获取数据的任务被启动，当其离开Compostion时，该任务被取消。
+* produceState 创建了一个协程，但它可用于观察非挂起的数据源。
+* 当produceState进入Composition时，获取数据的任务被启动，当其离开Compostion时，该任务被取消。
 
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/fa1cc40bff3303210683b518d961b5d7f28aa5ab 
+示例代码：[https://github.com/103style/ComposeDemo/commit/fa1cc40bff3303210683b518d961b5d7f28aa5ab](https://github.com/103style/ComposeDemo/commit/fa1cc40bff3303210683b518d961b5d7f28aa5ab) 
 
-derivedStateOf
+
+### derivedStateOf
 如果某个状态是从其他状态对象计算或派生得出的，请使用derivedStateOf。
+
 作为条件的状态我们称为条件状态。
+
 当任意一个条件状态更新时，结果状态都会重新计算。
 
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/2c841fa5e11a6a8497cb506d5ba0d322fc656671 
+示例代码：[https://github.com/103style/ComposeDemo/commit/2c841fa5e11a6a8497cb506d5ba0d322fc656671](https://github.com/103style/ComposeDemo/commit/2c841fa5e11a6a8497cb506d5ba0d322fc656671) 
 
-snapshotFlow
+
+### snapshotFlow
 使用snapshotFlow 可以将State对象转换为Flow。
+
 snapshotFlow 会运行传入的block，并发出从块中读取的State对象的结果。
+
 当在snapshotFlow块中读取的State对象之一发生变化时，如果新值与之前发出的值不相等，Flow会向其收集器发新值。
 
-示例代码：https://git.woa.com/kempluo/ComposeLearn/commit/d1bbbd8a57ab9c82d351e960df1cc14c914ec61f 
+示例代码：[https://github.com/103style/ComposeDemo/commit/d1bbbd8a57ab9c82d351e960df1cc14c914ec61f](https://github.com/103style/ComposeDemo/commit/d1bbbd8a57ab9c82d351e960df1cc14c914ec61f) 
 
 
 
 
-Compose参考资料
+## Compose参考资料
 1.https://developer.android.com/develop/ui/compose/documentation 👍
 2.Compose教程 👍
 3.视频：https://www.bilibili.com/video/BV1ob4y1a7ad/   👍
